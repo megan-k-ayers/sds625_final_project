@@ -5,6 +5,12 @@
 
 rm(list = ls())
 
+# QUESTIONS THAT NEED TO BE RESOLVED:
+# - When are zones and counties the same? According to weather.gov, zones are
+#   usually the same as counties but often subsets:
+#   https://www.weather.gov/gis/PublicZones. 
+
+
 # --------------------------- NOAA WEATHER ------------------------------------
 
 # Read in the NOAA extreme weather events 2019 data, discard unnecessary cols,
@@ -28,6 +34,7 @@ names(weather19) <- tolower(names(weather19))
 sum(table(weather19$event_id) > 1)  # Unique identifier for each event
 sum(table(weather19$episode_id) > 1)  # Has higher group meaning - not unique
 length(unique(weather19$cz_name))
+table(weather19$event_type)
 
 # Note that there are two different geographic levels for weather event entry:
 # zones and counties
@@ -92,7 +99,53 @@ zone_comp[zone_comp$name > 1, ]
 
 # These look like typos to me, so I am assuming zone # is unique within a state
 # and note that each row is for a different county that falls within the zone
-unique(cz_map[cz_map$state == "CO" & cz_map$zone %in% c(65, 72), ])
+unique(cz_map[cz_map$state == "CO" & cz_map$zone %in% c(65, 72),
+              c("name", "county")])
+
+
+# How frequently are zones and counties the same? Over half the time.
+sum(cz_map$name == cz_map$county) / nrow(cz_map)
+cz_map$c_z_flag <- cz_map$name == cz_map$county # Flag for when county == zone
+
+# No instances of multiple counties per zone when county name == zone name
+sum(aggregate(c_fips ~ zone + s_fips,
+              data = cz_map[cz_map$c_z_flag, ],
+              function(x){length(unique(x))})$c_fips > 1)
+
+# No instances of multiple zones per county when county name == zone name
+sum(aggregate(zone ~ c_fips + s_fips,
+              data = cz_map[cz_map$c_z_flag, ],
+              function(x){length(unique(x))})$zone > 1)
+
+# Flag when a zone encompasses multiple counties - I think it should be OK
+# to map weather events in these zones to counties, though to be ideally
+# rigorous I would check that these counties are fully surrounded by the zones.
+temp <- aggregate(c_fips ~ zone + s_fips, data = cz_map[!cz_map$c_z_flag, ],
+                  function(x){length(unique(x))})
+temp$mult_cnty_z <- temp$c_fips > 1
+cz_map <- merge(cz_map, temp[, c("s_fips", "zone", "mult_cnty_z")],
+                by = c("s_fips", "zone"), all.x = T)
+cz_map$mult_cnty_z <- ifelse(is.na(cz_map$mult_cnty_z), F, cz_map$mult_cnty_z)
+ 
+# UGHGGH I don't think I can use zones at all. Even if zones contain multiple
+# counties they don't necessarily contain the entire counties. Ex. upper
+# treasure valley in Idaho
+
+# Also flag when a county includes multiple zones. Assume that if a zone is a
+# "superset" (ie contains multiple counties)
+# In these cases I do NOT
+# want to interpolate weather events in these zones to the county level because
+# only a subset of the county potentially witnessed the event
+temp <- aggregate(zone ~ c_fips + s_fips, data = cz_map[!cz_map$c_z_flag, ],
+                  function(x){length(unique(x))})
+temp$mult_zone_c <- temp$zone > 1
+cz_map <- merge(cz_map, temp[, c("c_fips", "s_fips", "mult_zone_c")],
+              by = c("c_fips", "s_fips"), all.x = T)
+cz_map$mult_zone_c <- ifelse(is.na(cz_map$mult_zone_c), F, cz_map$mult_zone_c)
+
+table(cz_map$mult_cnty_z, cz_map$mult_zone_c)
+sum(cz_map$mult_cnty_z & !cz_map$mult_zone_c)
+
 
 
 # Ran into one instance where a zone was mistakenly flagged as a county - fix
