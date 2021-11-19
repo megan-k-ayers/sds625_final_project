@@ -5,11 +5,9 @@
 
 rm(list = ls())
 
-# QUESTIONS THAT NEED TO BE RESOLVED:
-# - When are zones and counties the same? According to weather.gov, zones are
-#   usually the same as counties but often subsets:
-#   https://www.weather.gov/gis/PublicZones. 
-
+# TODO: Comment this thoroughly
+# TODO: (Maybe) Run over 2018, 2020 data as well (in which case I should
+#               build some of this work out as functions)
 
 # --------------------------- NOAA WEATHER ------------------------------------
 
@@ -77,8 +75,12 @@ all(sort(unique(as.numeric(cz_map$s_fips))) ==  # All states represented
 
 # Verified below that there are sometimes multiple zones recorded for the same
 # county, as well as cases with multiple counties recorded for the same zone.
-# TODO: I will need to decide if all of these cases are appropriate to consider
-# at the county level when it comes to modeling.
+# Although a weather event occurring in a zone does not mean that the weather
+# event necessarily affected all individuals across the county, many types of
+# weather events are only recorded at the zone level (ex. wildfires,
+# hurricanes). Since we are working at the county level and not the individual
+# level with the climate opinion data anyways, I would argue that severe weather
+# in a zone has an impact on the county that it is a part of.
 test_zct <- aggregate(zone ~ s_fips + c_fips,
                       data = cz_map,
                       function(x) length(unique(x)))
@@ -87,6 +89,11 @@ test_cct <- aggregate(c_fips ~ s_fips + zone,
                       data = cz_map,
                       function(x) length(unique(x)))
 table(test_cct$c_fips)
+
+# Make a flag for when the county name == the zone name just to have for
+# reference
+cz_map$same_cz <- cz_map$county == cz_map$name
+table(cz_map$same_cz)
 
 
 # Is it ever the case that the same zone number has different names (within the
@@ -102,58 +109,10 @@ zone_comp[zone_comp$name > 1, ]
 unique(cz_map[cz_map$state == "CO" & cz_map$zone %in% c(65, 72),
               c("name", "county")])
 
-
-# How frequently are zones and counties the same? Over half the time.
-sum(cz_map$name == cz_map$county) / nrow(cz_map)
-cz_map$c_z_flag <- cz_map$name == cz_map$county # Flag for when county == zone
-
-# No instances of multiple counties per zone when county name == zone name
-sum(aggregate(c_fips ~ zone + s_fips,
-              data = cz_map[cz_map$c_z_flag, ],
-              function(x){length(unique(x))})$c_fips > 1)
-
-# No instances of multiple zones per county when county name == zone name
-sum(aggregate(zone ~ c_fips + s_fips,
-              data = cz_map[cz_map$c_z_flag, ],
-              function(x){length(unique(x))})$zone > 1)
-
-# Flag when a zone encompasses multiple counties - I think it should be OK
-# to map weather events in these zones to counties, though to be ideally
-# rigorous I would check that these counties are fully surrounded by the zones.
-temp <- aggregate(c_fips ~ zone + s_fips, data = cz_map[!cz_map$c_z_flag, ],
-                  function(x){length(unique(x))})
-temp$mult_cnty_z <- temp$c_fips > 1
-cz_map <- merge(cz_map, temp[, c("s_fips", "zone", "mult_cnty_z")],
-                by = c("s_fips", "zone"), all.x = T)
-cz_map$mult_cnty_z <- ifelse(is.na(cz_map$mult_cnty_z), F, cz_map$mult_cnty_z)
- 
-# UGHGGH I don't think I can use zones at all. Even if zones contain multiple
-# counties they don't necessarily contain the entire counties. Ex. upper
-# treasure valley in Idaho
-
-# Also flag when a county includes multiple zones. Assume that if a zone is a
-# "superset" (ie contains multiple counties)
-# In these cases I do NOT
-# want to interpolate weather events in these zones to the county level because
-# only a subset of the county potentially witnessed the event
-temp <- aggregate(zone ~ c_fips + s_fips, data = cz_map[!cz_map$c_z_flag, ],
-                  function(x){length(unique(x))})
-temp$mult_zone_c <- temp$zone > 1
-cz_map <- merge(cz_map, temp[, c("c_fips", "s_fips", "mult_zone_c")],
-              by = c("c_fips", "s_fips"), all.x = T)
-cz_map$mult_zone_c <- ifelse(is.na(cz_map$mult_zone_c), F, cz_map$mult_zone_c)
-
-table(cz_map$mult_cnty_z, cz_map$mult_zone_c)
-sum(cz_map$mult_cnty_z & !cz_map$mult_zone_c)
-
-
-
 # Ran into one instance where a zone was mistakenly flagged as a county - fix
 # this in the weather19 data
 weather19[weather19$event_id == "857412", "cz_type"] <- "Z"
 
-
-# *!*!*! Dev
 
 # Separate into zones and counties from weather19
 w19_c <- weather19[weather19$cz_type == "C", ]
@@ -161,12 +120,14 @@ w19_z <- weather19[weather19$cz_type == "Z", ]
 
 # Joining on state FIPS, zone code to attach county fips to the zone entries
 # of the weather data
-w19_z2 <- merge(w19_z, cz_map, by.x = c("state_fips", "cz_fips"),
+w19_z2 <- merge(w19_z, cz_map[, c("s_fips", "zone", "c_fips", "same_cz",
+                                  "county")],
+                by.x = c("state_fips", "cz_fips"),
                 by.y = c("s_fips", "zone"))
 
 
 # I expect the merge to result in more rows than we started with because
-# occasionally a zone refers to an area larger than a county, which matches to
+# sometimes a zone refers to an area larger than a county, which matches to
 # multiple counties. In this case we do want "duplicated" rows so that we have a
 # record of this weather event for each county affected, but check that this is
 # the only duplication case.
@@ -192,73 +153,99 @@ round(table(lost$state)/nrow(lost)*100, 2)
 round(table(w19_z2[w19_z2$state %in% lost$state, "state"])/nrow(w19_z2)*100, 2)
 
 
-# Some of these have the word "County" and appear to be mistakenly recorded
-# as zones and not counties...
+# Some of these have the word "County" and for whatever reason their zone codes
+# are not matching to the mapping file properly
 # View(cz_map[cz_map$state == "CA", ])
 # View(lost[lost$state == "CALIFORNIA", ])
 # View(fips_map[fips_map$state == "CALIFORNIA", ])
 
-# Wow, merging again by just state and zone name matches a good number (about
-# 1/3). But this gives me concerns about the quality of the c_fips variable!
-# How do I know that that isn't just as inaccurate as the zone code for these?
-test <- merge(lost, cz_map, by.x = c("state_fips", "cz_name"),
-              by.y = c("s_fips", "name"))
-length(unique(test$event_id)) / length(unique(lost$event_id))
+# Merging again by just state and zone name matches a good number (about
+# 1/3). More than I had hoped still remain unmatched, but it looks like they
+# will require individual string adjustments to infer a match, or just don't
+# exist in the county-zone map. If I have more time towards the end of the
+# project I will come back and try to tinker to get as many matches as possible.
 
-lost2 <- test[!lost$event_id %in% test$event_id, ]
+lost$cz_name2 <- gsub(" AREA", "", lost$cz_name)
 
-# I am not convinced everything joined properly, Bakersfield should be ok?!
-View(fips_map[fips_map$state == "CALIFORNIA", ])
-View(cz_map[cz_map$state == "CA", ])
-View(lost2[lost2$state.x == "CALIFORNIA", ])
+temp <- merge(lost,
+              cz_map[, c("s_fips", "c_fips", "same_cz", "county", "name")],
+              by.x = c("state_fips", "cz_name2"),
+              by.y = c("s_fips", "name"), all.x = F, all.y = F)
+length(unique(temp$event_id)) / length(unique(lost$event_id))
 
-# WHY ARE THERE NA???
-unique(lost2$state.x)
-unique(lost2$state.y)
-unique(lost2$state_fips)
+temp <- temp[, c("state", "state_fips", "county", "c_fips", "cz_name",
+                 "cz_fips", "event_id", "episode_id", "begin_date_time",
+                 "end_date_time", "injuries_direct", "injuries_indirect",
+                 "deaths_direct", "deaths_indirect", "damage_property",
+                 "damage_crops", "source", "magnitude", "magnitude_type",
+                 "flood_cause", "category", "same_cz", "event_type")]
+names(temp) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
+                 "event_id", "episode_id", "begin_date_time", "end_date_time",
+                 "injuries_direct", "injuries_indirect", "deaths_direct", 
+                 "deaths_indirect", "damage_property", "damage_crops",
+                 "source", "magnitude", "magnitude_type", "flood_cause",
+                 "category", "same_cz", "event_type") 
 
 
 # Choose relevant columns for merging the zone-level rows (now with county fips)
 # back with county-level rows
-w19_z2 <- w19_z2[, c("state.x", "state_fips", "county", "c_fips", "cz_name", "cz_fips",
-                     "event_id", "episode_id", "begin_date_time", "end_date_time",
-                     "injuries_direct", "injuries_indirect", "deaths_direct", 
-                     "deaths_indirect", "damage_property", "damage_crops", "source",
-                     "magnitude", "magnitude_type", "flood_cause", "category")]
+w19_z2 <- w19_z2[, c("state", "state_fips", "county", "c_fips", "cz_name",
+                     "cz_fips", "event_id", "episode_id", "begin_date_time",
+                     "end_date_time", "injuries_direct", "injuries_indirect",
+                     "deaths_direct", "deaths_indirect", "damage_property",
+                     "damage_crops", "source", "magnitude", "magnitude_type",
+                     "flood_cause", "category", "same_cz", "event_type")]
 names(w19_z2) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
                    "event_id", "episode_id", "begin_date_time", "end_date_time",
                    "injuries_direct", "injuries_indirect", "deaths_direct", 
                    "deaths_indirect", "damage_property", "damage_crops", "source",
-                   "magnitude", "magnitude_type", "flood_cause", "category")
-# Match rate to county FIPS:
+                   "magnitude", "magnitude_type", "flood_cause", "category",
+                   "same_cz", "event_type")
+
+sum(unique(w19_z2$event_id) %in% unique(temp$event_id))
+sum(unique(temp$event_id) %in% unique(w19_z2$event_id))
+w19_z2 <- rbind(w19_z2, temp)
+
+# Match rate to county FIPS - successfully matched a county FIPS code to
+# 95% of zone-level weather events
 length(unique(w19_z2$event_id)) / length(unique(w19_z$event_id))
 
 
-# # QA the county-level rows
-# test <- merge(w19_c, fips_map, by.x = c("state_fips", "cz_fips"),
-#            by.y = c("s_fips", 'c_fips'))
-# 
-# library(dplyr)
-# View(anti_join(w19_c, fips_map,
-#                by = c("state_fips" = "s_fips", "cz_fips" = "c_fips")))
-# 
-# 
-# w19_c$zone <- NA
-# w19_c$z_fips <- NA
-# w19_c <- w19_c[, c("state", "state_fips", "cz_name", "cz_fips", "zone",
-#                    "z_fips", "event_id", "episode_id", "begin_date_time",
-#                    "end_date_time", "injuries_direct", "injuries_indirect",
-#                    "deaths_direct", "deaths_indirect", "damage_property",
-#                    "damage_crops", "source", "magnitude", "magnitude_type",
-#                    "flood_cause", "category")]
-# names(w19_c) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
-#                   "event_id", "episode_id", "begin_date_time", "end_date_time",
-#                   "injuries_direct", "injuries_indirect", "deaths_direct", 
-#                   "deaths_indirect", "damage_property", "damage_crops", "source",
-#                   "magnitude", "magnitude_type", "flood_cause", "category")
-# w19 <- rbind(w19_c, w19_z2)
-# 
-# # Check 
-# w19[!w19$c_fips %in% unique(fips_map$c_fips), ]
+
+# QA the county-level rows - check that all state/county FIPS are valid
+# according to the Census
+cs_combos <- w19_c[, c("cz_fips", "state_fips")]
+cs_combos <- cs_combos[!duplicated(cs_combos), ]
+sum(sapply(1:nrow(cs_combos),
+           function(x){
+             cs_combos[x, "state_fips"] %in% unique(fips_map$s_fips) &
+               cs_combos[x, "cz_fips"] %in% unique(fips_map$c_fips)}))
+
+
+w19_c$zone <- NA
+w19_c$z_fips <- NA
+w19_c$same_cz <- NA
+w19_c <- w19_c[, c("state", "state_fips", "cz_name", "cz_fips", "zone",
+                   "z_fips", "event_id", "episode_id", "begin_date_time",
+                   "end_date_time", "injuries_direct", "injuries_indirect",
+                   "deaths_direct", "deaths_indirect", "damage_property",
+                   "damage_crops", "source", "magnitude", "magnitude_type",
+                   "flood_cause", "category", "same_cz", "event_type")]
+names(w19_c) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
+                  "event_id", "episode_id", "begin_date_time", "end_date_time",
+                  "injuries_direct", "injuries_indirect", "deaths_direct",
+                  "deaths_indirect", "damage_property", "damage_crops", "source",
+                  "magnitude", "magnitude_type", "flood_cause", "category",
+                  "same_cz", "event_type")
+w19 <- rbind(w19_c, w19_z2)
+
+# Final proportion of events that I was able to map to a county FIPS code:
+# over 98%! 
+length(unique(w19$event_id)) / length(unique(weather19$event_id))
+
+
+# Save this csv
+write.csv(w19, "./processed_data/noaa_weather19_cleaned.csv")
+
 
 
