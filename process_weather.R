@@ -179,7 +179,7 @@ temp <- temp[, c("state", "state_fips", "county", "c_fips", "cz_name",
                  "deaths_direct", "deaths_indirect", "damage_property",
                  "damage_crops", "source", "magnitude", "magnitude_type",
                  "flood_cause", "category", "same_cz", "event_type")]
-names(temp) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
+names(temp) <- c("state", "s_fips", "county", "c_fips", "zone", "z_fips",
                  "event_id", "episode_id", "begin_date_time", "end_date_time",
                  "injuries_direct", "injuries_indirect", "deaths_direct", 
                  "deaths_indirect", "damage_property", "damage_crops",
@@ -195,7 +195,7 @@ w19_z2 <- w19_z2[, c("state", "state_fips", "county", "c_fips", "cz_name",
                      "deaths_direct", "deaths_indirect", "damage_property",
                      "damage_crops", "source", "magnitude", "magnitude_type",
                      "flood_cause", "category", "same_cz", "event_type")]
-names(w19_z2) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
+names(w19_z2) <- c("state", "s_fips", "county", "c_fips", "zone", "z_fips",
                    "event_id", "episode_id", "begin_date_time", "end_date_time",
                    "injuries_direct", "injuries_indirect", "deaths_direct", 
                    "deaths_indirect", "damage_property", "damage_crops", "source",
@@ -231,7 +231,7 @@ w19_c <- w19_c[, c("state", "state_fips", "cz_name", "cz_fips", "zone",
                    "deaths_direct", "deaths_indirect", "damage_property",
                    "damage_crops", "source", "magnitude", "magnitude_type",
                    "flood_cause", "category", "same_cz", "event_type")]
-names(w19_c) <- c("state", "state_fips", "county", "c_fips", "zone", "z_fips",
+names(w19_c) <- c("state", "s_fips", "county", "c_fips", "zone", "z_fips",
                   "event_id", "episode_id", "begin_date_time", "end_date_time",
                   "injuries_direct", "injuries_indirect", "deaths_direct",
                   "deaths_indirect", "damage_property", "damage_crops", "source",
@@ -245,7 +245,7 @@ length(unique(w19$event_id)) / length(unique(weather19$event_id))
 
 
 # Save this csv
-write.csv(w19, "./processed_data/noaa_weather19_cleaned.csv")
+write.csv(w19, "./processed_data/noaa_weather19_cleaned.csv", row.names = F)
 
 
 
