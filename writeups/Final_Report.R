@@ -61,6 +61,8 @@
 #' individual experienced an extreme weather event, even if they are recorded
 #' as living in the county where one occurred.
 #' 
+#' \textcolor{red}{Need to add more about the other datasets.}
+#' 
 #' Note that individual level data may be preferable but I just have county
 #' level for now.
 #' 
@@ -85,6 +87,8 @@
 #' - https://climate-xchange.org/communicating-the-climate-crisis/
 #' - https://climatecommunication.yale.edu/
 #' - https://climatecommunication.yale.edu/visualizations-data/ycom-us/
+#' - https://thehill.com/changing-america/sustainability/climate-change/527644-the-us-states-best-and-least-positioned-to
+#' - https://www.policygenius.com/homeowners-insurance/best-and-worst-states-for-climate-change/
 #' 
 
 
