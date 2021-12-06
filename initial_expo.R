@@ -97,8 +97,8 @@ tapply(test$happening, test$weather_flag, mean)
 basic_lm <- lm(happening ~ weather_flag, data = test)
 summary(basic_lm)
 
-# Based on quality issues in NOAA data that I am now discovering, I might try
-# to do a last minute pivot to using Census data -
+# I am worried that there is no hurricane data reflected here. Maybe should
+# combine with 2018 data or use data from the Census?
 # https://www.census.gov/topics/preparedness/events.html
 
 # Downside is that it is not immediately clear if I will be able to get all of
@@ -106,6 +106,20 @@ summary(basic_lm)
 # affected by each event... Which would be a huge hassle. I don't think I have
 # the time or mental fortitude to scrape it (plus I'm not sure if the Census
 # allows that...)
+
+# Their hurricane data looks useful, wildfire data only includes counties in
+# CA but that pretty much tracks with what the NOAA data gives. 
+
+
+# !!! Next steps... Skip weather stuff for now, if I really needed to and ran
+# out of time I could use what I have here and just note that it is lacks
+# hurricane data and that I have concerns therefore about the overall data
+# quality and thus the model. And conclude that I cannot claim a relationship
+# with weather but been able to confirm other expectations with political
+# leaning and demographics and do some modeling just with that.
+
+
+
 
 
 
