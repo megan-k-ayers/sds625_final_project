@@ -116,13 +116,20 @@ names(w) <- c("state", "s_fips", "county", "c_fips", "weather_type", "year")
 
 w <- w[!duplicated(w), ]
 
-# Pivot so that we have one row per county with weather flags for each type
-# of weather event
+# Pivot so that we have one row per county per year with weather flags for each
+# type of weather event
 w$value <- TRUE  # Placeholder
 w <- pivot_wider(w, names_from = weather_type, values_from = value,
                  values_fill = F)
 names(w) <- tolower(gsub(" ", "_", names(w)))
 names(w) <- gsub("[\\(\\)]", "", names(w))
+
+# Pivot out one more time to get one row per county (duplicate weather flags
+# across the two years)
+w <- pivot_wider(w, names_from = year,
+                    values_from = c("hurricane", "coastal_storm", "flood",
+                                    "severe_storms", "fire", "snow", "tornado"),
+                    values_fill = F)
 
 # Save this to csv
 write.csv(w, "./processed_data/fema_weather_cleaned.csv", row.names = FALSE)

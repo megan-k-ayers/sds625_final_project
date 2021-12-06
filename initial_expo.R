@@ -31,19 +31,39 @@ summary(basic_lm)
 
 
 
-# ---------------- EXTREME WEATHER VISUALIZATIONS -------------------------
+# ---------------- EXTREME WEATHER EXPLORATION -------------------------
 
 rm(list = ls())
 w <- read.csv("./processed_data/fema_weather_cleaned.csv", header = T)
 y <- read.csv("./processed_data/ycom_cleaned.csv", header = T)
 
+y <- merge(y, w, by = c("c_fips", "county", "state", "s_fips"), all.x = T)
 
+# Columns flagging weather event occurrences end with _YYYY
+weather_cols <- grep("_2018|_2019", names(y))
 
+# Replace weather flag NA values resulting from merge with FALSE
+y[, weather_cols] <- as.data.frame(sapply(y[, weather_cols], function(a){
+  ifelse(is.na(a), FALSE, a) }))
 
+y$any_weather_18 <- sapply(1:nrow(y), function(a){
+  any(y[a, grep("_2018", names(y))]) })
+y$any_weather_19 <- sapply(1:nrow(y), function(a){
+  any(y[a, grep("_2019", names(y))]) })
+y$any_weather <- y$any_weather_18 | y$any_weather_19
 
+# How many counties with climate change belief estimates experienced FEMA
+# declared weather events in 2018/2019?
+table(y$any_weather_18)/nrow(y)
+table(y$any_weather_19)/nrow(y)
 
+table(y$any_weather_18, y$any_weather_19)/nrow(y)
 
-
-
-
+# Start with super basic ANOVA test - average climate belief estimates are
+# practically the same between those who did/did not experience a FEMA
+# declared weather event. But this is not that surprising to me since this is
+# way oversimplifying things - this is why I wanted to bring in other data.
+tapply(y$happening, y$any_weather, mean)
+basic_lm <- lm(happening ~ any_weather, data = y)
+summary(basic_lm)
 
