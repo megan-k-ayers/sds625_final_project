@@ -1,9 +1,16 @@
-# Data from https://www.fema.gov/about/openfema/data-sets#disaster
+# The purpose of this script is to merge two FEMA files with historical 
+# declared disaster data to generate one file with a row per county indicating
+# any weather-related disasters that the county has experienced in 2018 or 2019. 
 
+# Data from https://www.fema.gov/about/openfema/data-sets#disaster
 # x: https://www.fema.gov/openfema-data-page/fema-web-declaration-areas-v1
 # y: https://www.fema.gov/openfema-data-page/fema-web-disaster-declarations-v1
 
 rm(list = ls())
+
+# Only using for pivot_wider, confirmed case when a package is an improvement :)
+library(tidyverse)
+
 x <- read.csv("./src_data/FemaWebDeclarationAreas.csv")
 y <- read.csv("./src_data/FemaWebDisasterDeclarations.csv")
 
@@ -58,7 +65,8 @@ z$stateName <- toupper(z$stateName)
 fips_map <- read.csv("./processed_data/census_fips_cleaned.csv")
 z <- z[z$stateName %in% fips_map$state, ]  # Limit to states + DC
 
-z$temp_id <- 1:nrow(z)
+z$temp_id <- 1:nrow(z)  # Temporary unique ID so I can track which rows are
+# making it into the merge
 
 w <- merge(z, fips_map, by.x = c("placeName", "stateName"),
            by.y = c("county", "state"))
@@ -92,10 +100,30 @@ w <- merge(z, fips_map, by.x = c("placeName", "stateName"),
 nrow(w) / nrow(z)
 
 # How many counties are included here (have experienced a weather related
-# disaster?)
-nrow(w[!duplicated(w[, c("s_fips", "c_fips")]), ])
+# disaster)? About half! This is good for comparing between counties that have
+# and have not.
+nrow(w[!duplicated(w[, c("s_fips", "c_fips")]), ]) / nrow(fips_map)
 
 
+# --------------------------- Clean up and save ---------------------------
+w <- w[, c("stateName", "s_fips", "placeName", "c_fips", "incidentType",
+           "year")]
+names(w) <- c("state", "s_fips", "county", "c_fips", "weather_type", "year")
 
+# Remove duplicate rows (indicating than in the same year, the same county had
+# multiple disasters of the same type). I will just use a flag to indicate
+# whether or not a county experienced each type of weather event at all.
 
+w <- w[!duplicated(w), ]
+
+# Pivot so that we have one row per county with weather flags for each type
+# of weather event
+w$value <- TRUE  # Placeholder
+w <- pivot_wider(w, names_from = weather_type, values_from = value,
+                 values_fill = F)
+names(w) <- tolower(gsub(" ", "_", names(w)))
+names(w) <- gsub("[\\(\\)]", "", names(w))
+
+# Save this to csv
+write.csv(w, "./processed_data/fema_weather_cleaned.csv", row.names = FALSE)
 

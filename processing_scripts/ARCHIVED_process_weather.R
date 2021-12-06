@@ -1,3 +1,10 @@
+# THIS FILE SHOULD NO LONGER BE USED. I discovered that the data has a weirdly
+# low number of hurricane records, which I anticipate being a major component
+# of influencing climate change beliefs if weather events do have a relationship
+# to those beliefs. The zone-county matching is also somewhat sketchy, and I
+# found FEMA data that I think better serves my purpose, is clearer in
+# indicating an extreme weather event, and is cleaner at the county level. 
+
 # The purpose of this script is to standardize the county and state name and
 # FIPS columns in the NOAA weather data for future merging with other data sets,
 # to check if all US counties identified by the Census are accounted for, and
