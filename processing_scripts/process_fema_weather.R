@@ -101,7 +101,7 @@ nrow(w) / nrow(z)
 
 # How many counties are included here (have experienced a weather related
 # disaster)? About half! This is good for comparing between counties that have
-# and have not.
+# and have not. But note that this is over both 2018 and 2019, not just 2019.
 nrow(w[!duplicated(w[, c("s_fips", "c_fips")]), ]) / nrow(fips_map)
 
 
@@ -117,7 +117,11 @@ names(w) <- c("state", "s_fips", "county", "c_fips", "weather_type", "year")
 w <- w[!duplicated(w), ]
 
 # Pivot so that we have one row per county per year with weather flags for each
-# type of weather event
+# type of weather event, but first save a copy for plotting (because ggplot
+# likes data in long format)
+write.csv(w, "./processed_data/fema_weather_cleaned_LONG.csv",
+          row.names = FALSE)
+
 w$value <- TRUE  # Placeholder
 w <- pivot_wider(w, names_from = weather_type, values_from = value,
                  values_fill = F)

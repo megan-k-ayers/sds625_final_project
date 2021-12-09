@@ -15,7 +15,7 @@
 #' climate change. Without recognition of the seriousness of climate change,
 #' harmful consumer habits perpetuate, eco-friendly policies falter due to lack
 #' of support, and the industries and corporations that negatively impact the
-#' environment are not held accountable nor pressured to abandon the status quo.
+#' environment are not held accountable nor pressured to abandon the status-quo.
 #' Climate communication is a field that works with these issues, and in
 #' particular, with how to educate and persuade individuals about climate
 #' change and the necessity of acting to reduce it. The hope is that
@@ -89,6 +89,7 @@
 #' - https://climatecommunication.yale.edu/visualizations-data/ycom-us/
 #' - https://thehill.com/changing-america/sustainability/climate-change/527644-the-us-states-best-and-least-positioned-to
 #' - https://www.policygenius.com/homeowners-insurance/best-and-worst-states-for-climate-change/
+#' - https://kosukeimai.github.io/MatchIt/reference/method_optimal.html
 #' 
 
 

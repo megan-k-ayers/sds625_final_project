@@ -91,7 +91,8 @@ names(x) <- c("state", "s_fips", "county", "c_fips", "ttl_pop", "male_pop",
               "pacific_pop", "other_race_pop", "mult_race_pop",
               "white_nonhisp_pop", "hisp_ttl_pop", "white_hisp_pop",
               "black_hisp_pop", "med_income")
-
+x$state <- toupper(x$state)
+x$county <- toupper(x$county)
 
 write.csv(x, "./processed_data/census_data_cleaned.csv", row.names = FALSE)
 
