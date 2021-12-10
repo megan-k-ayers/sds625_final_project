@@ -45,16 +45,18 @@ x$other_race_pop <- x$other_race_pop / x$ttl_pop
 x$mult_race_pop <- x$mult_race_pop / x$ttl_pop
 
 # I don't want to include too many of these...the most predictive ones look
-# like log of non-white population, Asian population and Hispanic population
+# like sqrt of non-white population, Asian population and Hispanic population
+# (Using sqrt instead of log because I won't want log(0) happening for
+# any modeling later)
 plot(x$white_pop, x$happening)
-plot(log(1 - x$white_pop), x$happening) # Log of proportion of not-White pop
-plot(log(x$black_pop), x$happening)
-plot(log(x$native), x$happening)
-plot(log(x$asian_pop), x$happening)
-plot(log(x$hisp_ttl_pop), x$happening)
-plot(log(x$pacific_pop), x$happening)
-plot(log(x$other_race_pop), x$happening)
-plot(log(x$mult_race_pop), x$happening)
+plot(sqrt(1 - x$white_pop), x$happening) # sqrt of proportion of not-White pop
+plot(sqrt(x$black_pop), x$happening)
+plot(sqrt(x$native), x$happening)
+plot(sqrt(x$asian_pop), x$happening)
+plot(sqrt(x$hisp_ttl_pop), x$happening)
+plot(sqrt(x$pacific_pop), x$happening)
+plot(sqrt(x$other_race_pop), x$happening)
+plot(sqrt(x$mult_race_pop), x$happening)
 
 x$non_white_pop <- 1 - x$white_pop
 
@@ -88,12 +90,6 @@ names(x)[weath_cols] <- gsub("_2019", "", names(x)[weath_cols])
 x$any_weather <- sapply(1:nrow(x), function(a){
   any(x[a, weath_cols])
 })
-
-# For now I will consider counties that have experienced ANY weather event
-# vs. those who haven't. There may be heterogeneous relationships between
-# the different types of weather events and belief in climate change, but I
-# will start at a higher level.
-x <- x[, -weath_cols]
 
 # Don't want total population counts for matching, just proportions
 x <- x[, !names(x) %in% c("ttl_pop", "ttl_votes")]

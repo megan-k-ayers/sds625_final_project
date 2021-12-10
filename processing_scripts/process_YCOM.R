@@ -44,6 +44,7 @@ sum(y$c_name == y$county) / nrow(y) == 1  # Do all county names agree?
 # Perform some quick checks on the YCOM data
 sapply(y, function(x){sum(is.na(x))})  # Are there any NA values in any cols?
 hist(y$happening, breaks = 30)  # What is the distribution of `happening`? 
+qqnorm(y$happening)
 sum(table(y$geoid) > 1) == 0  # Are GEOIDs unique?
 
 # Drop extraneous county and GEOID columns, reorder, and save cleaned version to CSV
