@@ -36,13 +36,13 @@ table(x$med_income_g)
 
 
 # These groups define 16 clusters...
-y <- x[, c("state", "county", "any_weather", "happening", "poli_lean",
+y <- x[, c("state", "county", "weather_flag", "happening", "poli_lean",
            "med_age_g", "white_pop_g", "med_income_g")]
 
-grid <- expand.grid(unique(y$any_weather), unique(y$poli_lean),
+grid <- expand.grid(unique(y$weather_flag), unique(y$poli_lean),
                     unique(y$med_age_g), unique(y$white_pop_g),
                     unique(y$med_income_g))
-names(grid) <- c("any_weather", "poli_lean", "med_age_g", "white_pop_g",
+names(grid) <- c("weather_flag", "poli_lean", "med_age_g", "white_pop_g",
                  "med_income_g")
 
 y$group <- 0
@@ -54,7 +54,7 @@ for (i in 1:nrow(grid)) {
                    y$med_age_g == row$med_age_g &
                    y$white_pop_g == row$white_pop_g &
                    y$med_income_g == row$med_income_g &
-                   y$any_weather == row$any_weather)
+                   y$weather_flag == row$weather_flag)
   y[these, "group"] <- i
   grid[i, "n"] <- length(these)
   grid[i, "grp_var"] <- var(y[these, "happening"])
@@ -76,7 +76,7 @@ grid <- grid[-drop_grps, ]
 # Some groups with very small sample sizes remain, and based on initial looks
 # at qqplots below, I'm going to make a cut-off of 20 counties per group
 drop_grps <- sapply(1:nrow(grid), function(i){
-  if (grid[i, "n"] < 20 & grid[i, "any_weather"]){
+  if (grid[i, "n"] < 20 & grid[i, "weather_flag"]){
     return(i - 1) # Skip up to row where any_weather == FALSE for this group
   } else if (grid[i, "n"] < 20) { return(i) } else {return(NA)}
 })
@@ -130,8 +130,14 @@ for (i in as.numeric(rownames(grid))) {
 # For this exploratory analysis I will control FDR instead of the family
 # wise error rate - the stakes are low if there is one or two false positives,
 # so using Benjamini-Hochberg correction (less conservative) seems appropriate.
-# Doesn't matter too much, because none are significant anyways! Not that
-# surprisingly to me - these coarse categories have lost a lot of information.
+# Surprisingly, first significant coefficient indicates that experiencing
+# extreme weather makes you LESS likely to belief in climate change... This is
+# comparing counties that are red, older, whiter, and lower income (the
+# largest group).
+# The second significant coefficient indicates the reverse for counties that are
+# red, older, lower income, but have a larger non-white population.
+# Don't trust this method very much in either case - the bins feel too reductive
+# and most of the groups are lost due to having too few cases.
 res$p_bh <- p.adjust(res$p, method = "hochberg")
 res[order(res$p_bh), ]
 

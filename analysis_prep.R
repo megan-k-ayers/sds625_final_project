@@ -70,29 +70,38 @@ x <- x[, !names(x) %in% drop_cols]
 # I expect this to be predictive and also tied to living nearer to the coasts
 plot(log(x$med_income), x$happening)
 
+# Don't want total population counts for matching, just proportions
+x <- x[, !names(x) %in% c("ttl_pop", "ttl_votes")]
+
 
 
 # ----------------- WEATHER DATA VARIABLE SELECTION, CLEANING -----------------
 
-# Decided to only use 2019 weather data: I think we have enough counties
-# with weather events in 2019 to proceed and I feel more confident that people
-# would remember a weather event from a year ago than also remembering one two
-# years ago at the time of filling out the climate change opinions survey.
-x <- x[, !grepl("_2018", names(x))]
-
-# Replace weather flag NA values resulting from merge with FALSE, can also
-# remove 2019 from the name columns and add aggregated weather flag for if the
-# county experienced any weather events
-weath_cols <- grep("_2019", names(x))
+# Replace weather flag NA values resulting from merge with FALSE
+weath_cols <- grep("any_weather|hurricane", names(x))
 x[, weath_cols] <- as.data.frame(sapply(x[, weath_cols], function(a){
   ifelse(is.na(a), FALSE, a) }))
-names(x)[weath_cols] <- gsub("_2019", "", names(x)[weath_cols])
-x$any_weather <- sapply(1:nrow(x), function(a){
-  any(x[a, weath_cols])
-})
 
-# Don't want total population counts for matching, just proportions
-x <- x[, !names(x) %in% c("ttl_pop", "ttl_votes")]
+# Interested in counties where extreme weather occured as closely as possible
+# to the time of the survey, but also where it wouldn't be a fluke (more than
+# two other extreme events happened in the last 5 years)
+x$weather_flag <- x$any_weather_2019 & (x$any_weather_2018 +
+                                          x$any_weather_2017 +
+                                          x$any_weather_2016 +
+                                          x$any_weather_2015 >= 2)
+
+sum(x$weather_flag) / nrow(x)
+
+# Same logic but specifically wit hurricanes - might not end up using this but
+# could be interesting
+x$hurricane_flag <- x$hurricane_2019 & (x$hurricane_2018 +
+                                        x$hurricane_2017 +
+                                        x$hurricane_2016 +
+                                        x$hurricane_2015 >= 2)
+sum(x$hurricane_flag) / nrow(x)
+
+# Drop other weather variables
+x <- x[, -weath_cols]
 
 
 # ---------------- ELECTION DATA VARIABLE SELECTION, CLEANING ----------------

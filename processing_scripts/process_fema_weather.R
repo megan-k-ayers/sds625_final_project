@@ -12,6 +12,7 @@ rm(list = ls())
 library(tidyverse)
 
 x <- read.csv("./src_data/FemaWebDeclarationAreas.csv")
+Encoding(x$placeName) <- 'latin1'  # Takes care of accents
 y <- read.csv("./src_data/FemaWebDisasterDeclarations.csv")
 
 
@@ -25,15 +26,15 @@ incidents <- c("Coastal Storm", "Drought", "Fire", "Flood", "Freezing",
                "Tornado", "Typhoon")
 y <- y[y$incidentType %in% incidents, ]
 y <- y[, c("disasterNumber", "declarationDate", "disasterName", "stateCode",
-          "stateName", "incidentType")]
+           "stateName", "incidentType")]
 length(unique(y$disasterNumber)) == nrow(y)  # DisasterNumber is unique here
 
 head(y$declarationDate)
 y$year <- gsub("-.*", "", y$declarationDate)
 
-# Can't safely use 2020, survey responses were gathered just through Spring
-# 2020
-y <- y[y$year %in% c(2018, 2019), ]
+# Look at weather events that happened in the 5 years preceding the survey
+# (2015-2019)
+y <- y[y$year %in% seq(2015, 2019), ]
 table(y$incidentType)
 
 
@@ -47,7 +48,7 @@ hist(table(aggregate(id ~ disasterNumber, data = x, length)$id))
 # ...but I only care about one row for each county, so just keep that
 # information.
 x <- x[, c("disasterNumber", "stateCode", "stateName", "placeCode",
-              "placeName")]
+           "placeName")]
 x <- x[!duplicated(x), ]
 
 
@@ -74,7 +75,8 @@ w <- merge(z, fips_map, by.x = c("placeName", "stateName"),
 # Many of the rows that didn't match are reservations, which aren't counties.
 # Aside from those, it is mostly the Virginia city vs. county issue that is
 # troublesome.
-z[!z$temp_id %in% w$temp_id, c("placeName", "stateName")]
+problems <- z[!z$temp_id %in% w$temp_id, c("placeName", "stateName")]
+problems <- problems[!duplicated(problems), ]
 
 # Making an educated guess that the FEMA data adds "(County)" to the end of 
 # Virginia county names, but not "(City)" when it is an unincorporated city
@@ -89,19 +91,17 @@ z[z$stateCode == "VA",
 # ex: "New Haven (County)(in (P)MSA 1160,5480,8880)" 
 # Verified that there are not duplicated  names without the numerical code.
 # (fema.gov/disaster/747/designated-areas)
-
 z$placeName <- gsub("COUNTYIN PMSA.*", "COUNTY", z$placeName)
 
 w <- merge(z, fips_map, by.x = c("placeName", "stateName"),
            by.y = c("county", "state"))
 
-# At this point almost 98% of events were matched to counties! I'm happy with
+# At this point almost all events were matched to counties! I'm happy with
 # that.
 nrow(w) / nrow(z)
 
 # How many counties are included here (have experienced a weather related
-# disaster)? About half! This is good for comparing between counties that have
-# and have not. But note that this is over both 2018 and 2019, not just 2019.
+# disaster)?
 nrow(w[!duplicated(w[, c("s_fips", "c_fips")]), ]) / nrow(fips_map)
 
 
@@ -122,18 +122,28 @@ w <- w[!duplicated(w), ]
 write.csv(w, "./processed_data/fema_weather_cleaned_LONG.csv",
           row.names = FALSE)
 
-w$value <- TRUE  # Placeholder
-w <- pivot_wider(w, names_from = weather_type, values_from = value,
-                 values_fill = F)
-names(w) <- tolower(gsub(" ", "_", names(w)))
-names(w) <- gsub("[\\(\\)]", "", names(w))
+# Ultimately, going to simplify analysis to T/F flag if county has experienced
+# weather event, maybe considering secondary analysis with hurricanes, so 
+# we can get rid of extra info about other types of events.
+hurricanes <- w[w$weather_type == "Hurricane", ]
+hurricanes <- hurricanes[, c("state", "s_fips", "county", "c_fips", "year")]
+hurricanes <- hurricanes[!duplicated(hurricanes), ]
+hurricanes$hurricane <- T
+
+w <- w[, c("state", "s_fips", "county", "c_fips", "year")]
+w <- w[!duplicated(w), ]
+w$any_weather <- T
+w <- merge(w, hurricanes, by = c("state", "s_fips", "county", "c_fips", "year"),
+           all.x = T)
+w$hurricane <- ifelse(is.na(w$hurricane), F, T)
 
 # Pivot out one more time to get one row per county (duplicate weather flags
 # across the two years)
 w <- pivot_wider(w, names_from = year,
-                    values_from = c("hurricane", "coastal_storm", "flood",
-                                    "severe_storms", "fire", "snow", "tornado"),
-                    values_fill = F)
+                 values_from = c("hurricane", "any_weather"),
+                 values_fill = F)
+
+sapply(w[, 5:ncol(w)], function(a){sum(a)})
 
 # Save this to csv
 write.csv(w, "./processed_data/fema_weather_cleaned.csv", row.names = FALSE)
