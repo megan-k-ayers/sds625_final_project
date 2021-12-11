@@ -47,7 +47,7 @@ names(grid) <- c("weather_flag", "poli_lean", "med_age_g", "white_pop_g",
 
 y$group <- 0
 grid$n <- 0
-grid$grp_var <- 0
+grid$grp_sd <- 0
 for (i in 1:nrow(grid)) {
   row <- grid[i, ]
   these <- which(y$poli_lean == row$poli_lean &
@@ -57,16 +57,19 @@ for (i in 1:nrow(grid)) {
                    y$weather_flag == row$weather_flag)
   y[these, "group"] <- i
   grid[i, "n"] <- length(these)
-  grid[i, "grp_var"] <- var(y[these, "happening"])
+  grid[i, "grp_sd"] <- sd(y[these, "happening"], na.rm = T)
 }
+
+#### CHANGED TO SD
 
 # Some of these groups contain very few counties, and recall that an ANOVA
 # assumption is similar variances between comparison groups. Drop pairs (groups
 # the same except for any_weather) that have larger variance > 2*(min variance)
 grid
 
-drop_grps <- sapply(1:(nrow(grid)/2), function(i){
-  return( max(grid[c(i, i+1), "grp_var"]) > 2*min(grid[c(i, i+1), "grp_var"]) )
+drop_grps <- sapply(seq(1, nrow(grid), 2), function(i){
+  if (is.na(grid[i, "grp_sd"]) | is.na(grid[i+1, "grp_sd"])) return(FALSE)
+  return( max(grid[c(i, i+1), "grp_sd"]) > 2*min(grid[c(i, i+1), "grp_sd"]) )
 })
 
 drop_grps <- seq(1, nrow(grid), 2)[drop_grps]

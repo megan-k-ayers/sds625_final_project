@@ -7,9 +7,11 @@
 \BOOKMARK [2][-]{subsection.2.3}{Census demographic data}{section.2}% 7
 \BOOKMARK [2][-]{subsection.2.4}{FEMA weather data}{section.2}% 8
 \BOOKMARK [1][-]{section.3}{Analysis}{}% 9
-\BOOKMARK [1][-]{section.4}{Results}{}% 10
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 11
-\BOOKMARK [1][-]{section.6}{References}{}% 12
-\BOOKMARK [2][-]{subsection.6.1}{Contextualizing the problem of climate change and climate change communication}{section.6}% 13
-\BOOKMARK [2][-]{subsection.6.2}{Data sources}{section.6}% 14
-\BOOKMARK [2][-]{subsection.6.3}{Analysis documentation}{section.6}% 15
+\BOOKMARK [2][-]{subsection.3.1}{Covariate selection}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.2}{Regression model, matching, and clustering approaches}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{Results}{}% 12
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 13
+\BOOKMARK [1][-]{section.6}{References}{}% 14
+\BOOKMARK [2][-]{subsection.6.1}{Contextualizing the problem of climate change and climate change communication}{section.6}% 15
+\BOOKMARK [2][-]{subsection.6.2}{Data sources}{section.6}% 16
+\BOOKMARK [2][-]{subsection.6.3}{Analysis documentation}{section.6}% 17

@@ -6,6 +6,7 @@
 
 rm(list = ls())
 library(MatchIt)
+library(ggplot)
 set.seed(947)
 
 # Read in merged and cleaned data, continue only with columns to use for
@@ -25,6 +26,33 @@ m <- matchit(weather_flag ~ .,
              data = x[, !names(x) %in% c("state", "county", "happening")],
              method = "optimal")
 
+summary(m)
+plot(summary(m), var.order = "unmatched")
+
+before <- summary(m)$sum.all[, 3]  # Std. mean diff of covariates before match
+after <- summary(m)$sum.matched[, 3]  # " " after match
+n <- length(before)
+
+match_assess <- data.frame(name = c(names(before), names(after)),
+                           value = c(before, after),
+                           when = c(rep("before", n), rep("after", n)))
+match_assess$when <- factor(match_assess$when, levels = c("before", "after"))
+
+# Plot before and after covariate means
+balance_plot <- ggplot(data = match_assess,
+                       aes(y = reorder(name, value), x = value)) +
+  geom_col(aes(fill = when), position = "dodge") +
+  xlab("Standardized mean difference") +
+  ylab("Covariate name") +
+  ggtitle("Standardized mean difference between counties that experienced extreme
+weather and those that didn't, before and after matching") +
+  scale_fill_manual(name = "",
+                      values = c("dimgray", "cornflowerblue")) +
+  theme_bw()
+
+ggsave("./writeups/images/matching_balance_plot.png", plot = balance_plot,
+       device = "png", width = 8, height = 4, units = "in", bg = "white")
+
 # I'm calling these "treat" and "control" just for intuitive naming, although
 # I am NOT claiming that this is a causal inference analysis.
 # The matchit function outputs the rows of those treated in match.matrix with
@@ -32,7 +60,7 @@ m <- matchit(weather_flag ~ .,
 # entry.
 matches <- data.frame(treat = rownames(m$match.matrix),
                       control = m$match.matrix)
-summary(matches)
+
 
 # Some checks to convince myself that this did something somewhat reliable...
 x_t <- x[matches[, 1], ]
@@ -45,7 +73,6 @@ mean(x_t$med_income - x_c$med_income) / sd(x$med_income)
 mean(x_t$prop_dem - x_c$prop_dem) / sd(x$prop_dem)
 mean(x_t$prop_rep - x_c$prop_rep) / sd(x$prop_rep)
 mean(x_t$non_white_pop - x_c$non_white_pop) / sd(x$non_white_pop)
-
 
 # Doing some spot-checking, some matches definitely look as though they are
 # better than others. If I have time I could try to implement this myself.
