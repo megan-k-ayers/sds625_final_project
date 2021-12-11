@@ -67,7 +67,7 @@ Communication is used to understand climate change belief (the response
 variable of this analysis). This data consists of US
 county-level estimates of climate change beliefs, i.e. x\% of the population
 in New Haven County believes that climate change is happening. These
-estimates are calculated from a large-scale nation-wide survey (n > 25,000)
+estimates are calculated from a large-scale nation-wide survey ($n > 25,000$)
 conducted in spring of 2020, and were "derived from a statistical model using
 multilevel regression with post-stratification (MRP)". Though using
 individual-level data could be more convincing for arguing existence of a
@@ -99,7 +99,7 @@ experiencing - more severe weather than others.
 
 \section{Data Preparation}
 
-Merging these data sources required considerable cleaning and quality
+Merging these data sources required cleaning and quality
 assurance checks of each individual source.
 
 \subsection{Climate change opinion survey data}
@@ -110,24 +110,23 @@ in 2020, there are no duplicate rows, and the response variable `happening`
 (indicating the proportion of county population that believes climate change
 is happening) is relatively Normal in distribution. Note that the original
 survey file contains data for many different climate-related questions asked
-in the survey, but for this analysis I am just focusing on the high level
+in the survey, but this analysis focuses only on the high level
 question of existence of climate change.
 
 \subsection{Election data}
 This data set required a little more work to clean up. Data was reported for
-one county that was not recognized as a by the Census, and was dropped. For
-some reason, San Joaquin County CA had missing data, which I was able to 
-manually find from the county website and replace. Votes were sometimes
+one county that was not recognized as a county by the Census, and was dropped. For
+some reason, San Joaquin County CA had missing data, which was found 
+manually from the county website and replaced. Votes were sometimes
 recorded by the mode in which they were received (ex. "Early Vote", 
 "Absentee", "Election Day" etc.) and sometimes in total, so aggregation to 
-the total county level had to be standardized between counties. I was able
-to rectify all differences in county names between this source and the 
-Census Bureau (which I regarded as ground truth for standardizing all sources
-to use FIPS codes for future merging) except for voting districts in Alaska.
+the total county level had to be standardized between counties. All differences in county names between this source and the 
+Census Bureau (which was regarded as ground truth for standardizing all sources
+to use FIPS codes for future merging) could be rectified except for voting districts in Alaska.
 I was unable to find a way to map voting districts to Census-reported
 counties, so I dropped Alaska from the analysis. Although the other data
-sources do have information on Alaska, I found political leaning to be such a
-strong indicator of climate change belief that I think it is preferable to
+sources do have information on Alaska, political leaning was clearly such a
+strong indicator of climate change belief that it seems preferable to
 drop it entirely from the analysis rather than introduce missing values for
 political leaning.
 Figure 1 shows the geographic distribution of the county-level 2020 election
