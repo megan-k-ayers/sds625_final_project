@@ -3,7 +3,7 @@
 # climate change belief.
 
 rm(list = ls())
-library(ggplot)
+library(ggplot2)
 
 # ---- Read in processed data and merge them together, one row per county ----
 x <- read.csv("./processed_data/ycom_cleaned.csv", header = T)
@@ -137,8 +137,16 @@ hist(x$prop_dem)
 
 # Fairly normal, don't think this will require any transforms
 hist(x$happening, breaks = 50)
-qqnorm(x$happening)
+p_qq <- qqnorm(x$happening)
 table(x$poli_lean)
+
+# Save qqplot for report appendix
+dev.off()
+png(filename = "./writeups/images/response_qqplot.png",
+    width = 800, height = 500, pointsize = 20)
+plot(p_qq, xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
+     main = "Normal Q-Q Plot of Response Variable `happening`")
+dev.off()
 
 sd(x[x$poli_lean == "red", "happening"])
 sd(x[x$poli_lean == "blue", "happening"])

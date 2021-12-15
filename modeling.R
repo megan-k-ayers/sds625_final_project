@@ -19,12 +19,23 @@ summary(lm_fit)
 lm_fit$coefficients["weather_flagTRUE"]
 
 # Checking model assumptions...
-
+# Save model diagnostic plots for report appendix
+dev.off()
+png(filename = "./writeups/images/regression_residuals_hist.png",
+    width = 800, height = 500, pointsize = 20)
 # Normality of residuals looks good
-hist(lm_fit$residuals, breaks = 40)
+hist(lm_fit$residuals, breaks = 40, xlab = "Residuals",
+     main = "Regression residuals normality check")
+dev.off()
 
+png(filename = "./writeups/images/regression_variance_check.png",
+    width = 800, height = 500, pointsize = 20)
 # Heteroscedaciditicitidy looks fine
-plot(lm_fit$fitted.values, lm_fit$residuals)
+plot(lm_fit$fitted.values, lm_fit$residuals, xlab = "Fitted Values",
+     ylab = "Residuals", main = "Regression heteroscedasticity check")
+dev.off()
+
+
 
 
 
