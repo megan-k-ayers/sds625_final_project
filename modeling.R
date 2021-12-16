@@ -14,20 +14,23 @@ x <- read.csv("./processed_data/merged_data.csv")
 
 x <- x[, c("county", "state", "weather_flag", "hurricane_flag", "happening",
            "prop_dem", "hisp_ttl_pop", "white_nonhisp_pop",
-           "ttl_votes", "asian_pop", "black_pop", "mult_race_pop")]
+           "ttl_votes", "asian_pop", "black_pop", "mult_race_pop", "prop_lib",
+           "med_age")]
 
 # Recalculate the transformations from clustering.R
 x$hisp_ttl_pop_sqrt <- sqrt(x$hisp_ttl_pop)
 x$asian_pop_sqrt <- sqrt(x$asian_pop)
 x$black_pop_sqrt <- sqrt(x$black_pop)
 x$mult_race_pop_sqrt <- sqrt(x$mult_race_pop)
+x$prop_lib_sqrt <- sqrt(x$prop_lib)
 
 
 # ----------------- MODELING -----------------
 
 lm_fit <- lm(happening ~ prop_dem + hisp_ttl_pop_sqrt + white_nonhisp_pop +
                ttl_votes + asian_pop_sqrt + black_pop_sqrt +
-               mult_race_pop_sqrt + weather_flag, data = x)
+               mult_race_pop_sqrt + + prop_lib_sqrt + med_age + weather_flag,
+             data = x)
 
 summary(lm_fit)
 
@@ -71,13 +74,13 @@ png(filename = "./writeups/images/regression_residuals_hist_hurricane.png",
     width = 800, height = 500, pointsize = 20)
 # Normality of residuals looks good
 hist(lm_fit$residuals, breaks = 40, xlab = "Residuals",
-     main = "Regression residuals normality check")
+     main = "Regression residuals normality check - HURRICANE")
 dev.off()
 
 png(filename = "./writeups/images/regression_variance_check_hurricane.png",
     width = 800, height = 500, pointsize = 20)
 # Heteroscedaciditicitidy looks fine
 plot(lm_fit$fitted.values, lm_fit$residuals, xlab = "Fitted Values",
-     ylab = "Residuals", main = "Regression heteroscedasticity check")
+     ylab = "Residuals", main = "Regression heteroscedasticity check - HURRICANE")
 dev.off()
 

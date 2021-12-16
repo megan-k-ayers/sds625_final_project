@@ -29,21 +29,32 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Census demographic data}{2}{subsection.2.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4}FEMA weather data}{2}{subsection.2.4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces This figure shows the 2020 presidential election results at the county level while also showing whether these counties have climate change belief above/below average compared to their political group. "Split" counties refers to counties where neither Democrats nor Republicans won more than 52.5\% of the vote.}}{3}{figure.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Upper left: counties with FEMA declared disasters that are flagged as "affected by severe weather" in this analysis. The rest of the plots show all FEMA declared weather disasters from 2015-2019. Larger plots are available in code directory.}}{4}{figure.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Upper left: counties with FEMA declared disasters that are flagged as "affected by severe weather" in this analysis. The rest of the plots show all FEMA declared weather disasters from 2015-2019. Larger plots can be found in code directory.}}{4}{figure.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces A boxplot is shown for every continuous covariate collected for this analysis, as well as the response `happening', with the two colors representing counties that did/did not experience extreme weather. Variables that have been transformed have titles ending in sqrt or log.}}{5}{figure.3}}
+\newlabel{covariate_comp}{{3}{5}{A boxplot is shown for every continuous covariate collected for this analysis, as well as the response `happening', with the two colors representing counties that did/did not experience extreme weather. Variables that have been transformed have titles ending in sqrt or log}{figure.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Analysis}{5}{section.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Covariate selection \leavevmode {\color  {red}Should I select differently for the different methods? Here I am selecting variables to optimize for regression. If not, explain why. And explain what you mean by predictive.}}{5}{subsection.3.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces On average, counties that voted majority Democrat in the 2020 general election are estimated to have about 74\% of county population believing in climate change, while counties that voted majority Republican are estimated to have about 63\% of county population believing in climate change. This is a difference of 11\%, and the resulting t-statistic is -54.21.}}{6}{figure.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Regression model, matching, and clustering approaches}{6}{subsection.3.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces This figure shows that matching via MatchIt was able to reduce the standardized mean difference between all covariates but the median age, whose standardized mean difference actually increased.}}{7}{figure.4}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{7}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Exploratory Data Analysis and Covariate Selection}{5}{subsection.3.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces All covariates are plotted with the response variable `happening' to verify that relationships appear to be roughly linear. If variables have been transformed, their titles end in ``sqrt" or ``log" to represent the appropriate transformation.}}{6}{figure.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces On average, counties that voted majority Democrat in the 2020 general election are estimated to have about 74\% of county population believing in climate change, while counties that voted majority Republican are estimated to have about 63\% of county population believing in climate change. This is a difference of 11\%, and the resulting t-statistic is -54.21.}}{7}{figure.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Exploratory clustering}{7}{subsection.3.2}}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Results of clustering analysis. Values for $n$ are listed in the order: did not experience extreme weather, did experience extreme weather. Positive mean difference values indicate that counties that did experience extreme weather had higher average belief in climate change than those those that did not.}}{8}{table.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Summary of linear regression model predicting county climate change belief.}}{8}{figure.5}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{8}{section.5}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}References}{10}{section.6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Contextualizing the problem of climate change and climate change communication}{10}{subsection.6.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Data sources}{10}{subsection.6.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Analysis documentation}{10}{subsection.6.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Appendix}{11}{section.7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The response variable, the estimated proportion of county population that believes in climate change, is approximately Normally distributed.}}{11}{figure.6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Histogram of the residuals from the linear model discussed in the analysis section.}}{11}{figure.7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Heteroscedasticity model diagnostic plot for the linear model discussed in the analysis section.}}{12}{figure.8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Matching}{8}{subsection.3.3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces This figure shows that matching via MatchIt was able to improve the standardized mean difference between almost all covariates, though the Democrat proportion of votes remains virtually unchanged in magnitude but changes sign.}}{9}{figure.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Regression}{9}{subsection.3.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{9}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Matching}{9}{subsection.4.1}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Results of paired t-test, methods described in Matching subsection of Analysis.}}{9}{table.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Regression}{10}{subsection.4.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Summary of linear regression model predicting county climate change belief.}}{10}{figure.7}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{10}{section.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}References}{11}{section.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Contextualizing the problem of climate change and climate change communication}{11}{subsection.6.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Data sources}{11}{subsection.6.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Analysis documentation}{11}{subsection.6.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Appendix}{12}{section.7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces The response variable, the estimated proportion of county population that believes in climate change, is approximately Normally distributed.}}{12}{figure.8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Histogram of the residuals from the linear model discussed in the analysis section.}}{12}{figure.9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Coefficients resulting from Lasso regression on the {\bf  {training}} data (all covariates that were not extremely correlated included, with training data comprising 50\% of the original counties).}}{13}{figure.10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Coefficients resulting from Lasso regression on the {\bf  {test}} data (all covariates that were not extremely correlated included, with training data comprising 50\% of the original counties).}}{13}{figure.11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Normality check for the differences in climate change belief among matched pairs described in the Matching section.}}{13}{figure.12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Heteroscedasticity model diagnostic plot for the linear model discussed in the analysis section.}}{14}{figure.13}}

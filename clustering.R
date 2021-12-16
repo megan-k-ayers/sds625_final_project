@@ -175,7 +175,7 @@ ggsave("./writeups/images/covariates_vs_happening.png", plot = p,
 lambdas <- seq(0, 0.2, 0.002)
 set.seed(947)
 
-# Splitting up into a train/test pair to check for over-fitting
+# Splitting up into a train/test pair to tune lambda
 inds = sample(1:nrow(x), nrow(x)/2)
 data = pivot_wider(x_long, names_from = "var", values_from = "value")
 
@@ -213,15 +213,14 @@ test_coefs[order(-abs(test_coefs[, 1])), 1]
 # Some have switched around, but it seems mostly due to the fact that there is
 # some collinearity within the race/ethnicity categories. 
 
-coefs[order(-abs(coefs[, 1])), 1][1:10]
-test_coefs[order(-abs(test_coefs[, 1])), 1][1:10]
+coefs[order(-abs(coefs[, 1])), 1]
+test_coefs[order(-abs(test_coefs[, 1])), 1]
 
 # Consistenly between the testing and training, prop_dem, hisp_ttl_pop_sqrt,
 # white_nonhisp_pop, prop_lib_sqrt, ttl_votes, asian_pop_sqrt, prop_lib_sqrt,
 # black_pop_sqrt, and mult_race_pop_sqrt
 # made it into the top 10 largest (in absolute value) coefficient list. A little
 # surprising to me that age is not consistently large, but okay.
-# Looking back at prop_lib, because I am worried about the outlier there.
 
 
 # ---------------------------- CLUSTER EXPLORATION ----------------------------
@@ -264,6 +263,14 @@ p <- ggplot(data = x, aes(x = poli_lean_f, y = happening)) +
 
 ggsave("./writeups/images/election_party_anova.png", plot = p,
        device = "png", width = 8, height = 5, units = "in", bg = "white")
+
+
+# What about within-group differences based on extreme weather experience?
+basic_lm <- lm(happening ~ weather_flag, data = x[x$poli_lean == "red", ])
+summary(basic_lm)
+
+basic_lm <- lm(happening ~ weather_flag, data = x[x$poli_lean == "blue", ])
+summary(basic_lm)
 
 
 # Now starting the full splitting out of the population into clusters...

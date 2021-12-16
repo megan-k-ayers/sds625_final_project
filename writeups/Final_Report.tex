@@ -53,7 +53,7 @@ cause a person to take climate change more seriously, compared to someone
 who just hears about these things happening on the news. However, there are
 other cultural and demographic factors that are expected to have an effect
 on climate change opinions that also need to be controlled for, such as
-political leanings and age.
+political leanings and age. To understand these factors and to attempt to quantify the relationship between experiencing extreme weather and climate change beliefs, a few different approaches were used: exploratory data analysis and manual clustering to look for high level and heterogeneous relationships, a matching procedure to directly compare similar counties that differed on their experience of extreme weather, and linear regression to try to understand how all covariates, including extreme weather experience, correlate with climate change opinions. 
 
 
 \subsection{Data sources}
@@ -133,6 +133,7 @@ Figure 1 shows the geographic distribution of the county-level 2020 election
 results, while also indicating whether that county has above or below average
 belief in climate change (compared to the political group average, not the
 overall average).
+Later in the analysis, four counties were found to have had over 100\% of their population reported as having allegedly voted in the 2020 general election. The county population numbers from the Census were verified, which casts the election data for these counties into doubt. Because political leaning was found to be such a strong indicator of climate change opinion, and because none of these counties were considered to have experienced extreme weather as defined later in this section, these four counties were dropped from the analysis.
 
 \subsection{Census demographic data}
 The ACS 2019 estimates obtained through the Census were very clean and
@@ -172,19 +173,32 @@ to be considered as "affected by severe weather" in the analysis.
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.175]{images/fema_events_maps_combined.png}
-\caption{Upper left: counties with FEMA declared disasters that are flagged as "affected by severe weather" in this analysis. The rest of the plots show all FEMA declared weather disasters from 2015-2019. Larger plots are available in code directory.}
+\caption{Upper left: counties with FEMA declared disasters that are flagged as "affected by severe weather" in this analysis. The rest of the plots show all FEMA declared weather disasters from 2015-2019. Larger plots can be found in code directory.}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/covariate_dist_comp.png}
+\caption{A boxplot is shown for every continuous covariate collected for this analysis, as well as the response `happening', with the two colors representing counties that did/did not experience extreme weather. Variables that have been transformed have titles ending in sqrt or log.}
+\label{covariate_comp}
+\end{figure}
 
 \section{Analysis}
-Three different approaches were used to try to understand the impact of these extreme weather events on the county-level climate change beliefs: linear regression, a county matching procedure between counties that did and did not experience extreme weather as defined in this report, and hypothesis testing of average beliefs between clusters of counties. In the third approach, clusters were formed by grouping counties into interpretable categories based on their covariates, rather than by using an unsupervised method. While linear regression is a powerful and interpretable tool on its own, I wanted to try additional approaches to compare the results and also attempt to answer the motivating question from a couple of different angles. Assuming a well-specified model, the regression coefficient for the "experienced extreme weather" flag would estimate the average amount of increased or decreased belief in climate change that would result from experiencing an extreme weather event, holding other covariates constant. On the other hand, the matching procedure will pair counties that are as similar to each other as possible except by their experience of extreme weather, and look at the average difference in their climate change beliefs. This process avoids assumptions that covariates, or transformations of covariates, are linear with respect to the response variable. If the regression model is well-specified, and if counties can be matched closely to each other, then I would expect these metrics (the extreme weather coefficient and the average pair-wise difference in climate change belief from matching) to be pretty similar.
 
-The third approach attempted is a manual clustering technique, where counties are matched more coarsely based on their covariates (the details of these covariates and their thresholds are discussed below). Ideally, this technique could identify potential heterogeneity when it comes to the effect of extreme weather experience on climate change beliefs. For example, maybe individuals living in democrat-leaning, high-income, diverse counties tend to be more influenced by extreme weather when it comes to climate change beliefs, whereas republican-leaning, high-income, 
+\subsection{Exploratory Data Analysis and Covariate Selection}
+First, to understand if and how counties that experienced extreme weather differed from those that didn't, some exploratory data analysis was performed. 511 counties met the extreme weather conditions outlined above, leaving 2600 counties as what may informally be referred to as the control group. Between these two groups, the distribution of all collected covariates was compared, as is shown in Figure \ref{covariate_comp}. We can see that there is relatively close agreement in distribution between the groups across covariates. This is not very surprising - the 511 counties that did experience extreme weather are scattered across diverse regions of the country in such a way that it seems reasonable for them to constitute a fairly representative sample of the larger group of counties. 
 
-Before attempting any of these, the relationship between each covariate and the response variable (belief in climate change) was explored to determine a smaller subset of variables to use in the analysis. 
+Next, using all counties, the covariates were compared to `happening' (the proportion of each county estimated to believe that climate change is happening) to observe any visually obvious relationships between the variables and the response. Because an ultimate goal of the analysis was to use linear regression, and to use Lasso as a method for variable selection, variables were transformed using the square root or logarithm transformation if needed to enforce more linear relationships. The square root transformation was applied to those variables that had many zero values in the data, such as proportions of certain race or ethnicity groups in county populations. These plots in their transformed forms can be viewed in Figure 4.
 
-\subsection{Covariate selection \textcolor{red}{Should I select differently for the different methods? Here I am selecting variables to optimize for regression. If not, explain why. And explain what you mean by predictive.}}
-Within the Census-provided covariates, median age, median income, proportion of non-white population, proportion of Asian population, and proportion of Hispanic population were identified as appearing most predictive of climate change belief. Other variables for race and ethnicity proportions appeared to be somewhat predictive, but were left out in an attempt to allow for better county-to-county matching on the most predictive variables. The 2020 election data includes proportions of votes to Green, Libertarian, and "Other" candidates in addition to the major two parties. Shares of votes to these third party candidates were initially expected to be somewhat predictive of climate change belief, in particular the share of Green party votes, but none where anywhere close to as strong as the share of votes to Joe Biden or Donald Trump. Therefore, the approaches listed above only considered the share of votes to the Democratic candidate. To also include the share of votes to the Republican candidate would be redundant, as the two are almost perfectly negatively correlated with a correlation value of -0.999, which is not surprising given our two-party system. To quickly test the hypothesis that political leaning alone, a simple one-way ANOVA was performed on average belief in climate change between counties that voted majority Democrat and counties that voted majority Republican. The test is visualized in the boxplot below, the resulting p-value of $<0.01$ strongly rejecting the null that political affiliate has no impact on climate change belief.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{images/covariates_vs_happening.png}
+\caption{All covariates are plotted with the response variable `happening' to verify that relationships appear to be roughly linear. If variables have been transformed, their titles end in ``sqrt" or ``log" to represent the appropriate transformation.}
+\end{figure}
+
+Before performing Lasso, a few variables that were strongly correlated with other covariates were dropped from consideration: the proportion of county vote towards the Republican party (which is almost perfectly negatively correlated with vote towards the Democratic party), and median age for the male and female populations (which is almost perfectly correlated with the aggregate median age). After normalizing the data, the glmnet R package was used to tune for $\lambda$ using cross validation on a training set of randomly selected counties. Using the resulting "best" tuning parameter, Lasso regression was then run again over both the training and test data. The resulting coefficients are shown in the appendix, ordered by descending absolute value. 
+
+The clearest result of the Lasso procedure was that proportion of votes towards Democrats/Republicans was by far the largest coefficient, indicating the strength of political leaning as a predictor of climate change beliefs. Intuitively, this is not surprising. To see just how much political leaning alone could explain about the variance of climate change beliefs, a simple one-way ANOVA test was performed on average belief in climate change between counties that voted majority Democrat and counties that voted majority Republican. The test is visualized in the boxplot below, the resulting p-value of $<0.01$ strongly rejecting the null that political affiliation has no impact on climate change belief.
 
 \begin{figure}[H]
 \centering
@@ -192,54 +206,31 @@ Within the Census-provided covariates, median age, median income, proportion of 
 \caption{On average, counties that voted majority Democrat in the 2020 general election are estimated to have about 74\% of county population believing in climate change, while counties that voted majority Republican are estimated to have about 63\% of county population believing in climate change. This is a difference of 11\%, and the resulting t-statistic is -54.21.}
 \end{figure}
 
-The data meets the requirements for ANOVA testing. The distribution of climate change beliefs is approximately Normal, these responses are assumed to be independent, and the variance between groups is approximately equal (the standard deviation of the response for Republican-leaning counties is approximately 4.32, while the standard deviation of the response for Democratic-leaning counties is approximately 4.12). 
+Note that the data met the requirements for ANOVA testing. The distribution of climate change beliefs is approximately Normal (this is shown in the appendix), these responses are assumed to be independent, and the variance between groups is approximately equal (the standard deviation of the response for Republican-leaning counties is approximately 4.32, while the standard deviation of the response for Democratic-leaning counties is approximately 4.12). 
 
-\subsection{Regression model, matching, and clustering approaches}
-Beginning with the simpler approach, the identified covariate were used in a linear regression along with the discussed extreme weather flag for predicting county climate change belief. Square-root transforms were applied to the population proportion variables rather than the log transform, as multiple counties had population proportions of 0 for some groups. The log transform was applied to the median income covariate. Model diagnostic tests passed, as the residuals appeared to be close to Normal and residual variance looked fairly equal across fitted values (plots demonstrating these tests can be found in the appendix). This procedure was repeated using an extreme weather flag specifically for counties that experienced hurricanes, using the same logic of only flagging a county if it experienced a hurricane in 2019 in addition to two others since 2015. Hurricanes specifically were chosen for this additional analysis because they are the type of event that affected the most counties the most often. 
+\subsection{Exploratory clustering}
+A manual clustering approach was applied to the data at this point to see how counties similar to each other in higher level terms compared with respect to climate change belief. Unsupervised clustering could also have revealed interesting relationships, but the purpose at this point was to explore interpretable relationships between covariates, the response, and extreme weather, to inform further analysis. To minimize the number of clusters, five of the covariates weighted with the largest magnitude coefficients in the Lasso procedure discussed above were used to differentiate counties at this point: political leaning, total Hispanic population proportion, non-Hispanic white population proportion, proportion of population that voted in 2020, and the proportion of libertarian vote. Each variable was manually discretized into two categories each. Political leaning was split by which party won the majority of each county's vote. Population proportion thresholds were determined using the national proportion of that group in 2019, and then used to bucket counties into "high" or "low" categories. The mean voter turnout value across counties happened to be around 50\%, making that a convenient and sensible threshold. Finally, the proportion of libertarian vote was determined also by comparison to the mean proportion across counties. The resulting 32 clusters were then split further into pairs based on whether or not they had experienced extreme weather.
 
-For the second approach towards understanding the relationship between extreme weather events and climate change belief, the R package MatchIt was used. This package is developed for causal inference applications, and "performs pairing, subset selection, and subclassification with the aim of creating treatment and control groups balanced on included covariates", as stated in its documentation. This analysis does not consist of a proper causal inference framework, for reasons including the lack of randomization between "treatment" of experiencing an extreme weather event, and the fact that belief estimates are obtained only at the county level rather than the individual level. However, the package and ideas behind comparing "treatment" and "control" group responses are still helpful for the goals of this report. Using MatchIt, counties that were flagged as experiencing extreme weather were matched to counties that did not, but were as similar as possible to the first county with respect to the selected covariates. In particular, the "optimal" matching method was used, which minimizes the sum of absolute pairwise distances in the matched sample. This lowers the probability of extreme within-pair distances with respect to covariates. Figure 4 shows the effects of matching on the standardized mean difference of the covariates of counties with and without the extreme weather flag.
+To maintain the ANOVA assumption of equal variances, pairs were removed from the cluster analysis if the maximum standard deviation of the pair exceeded the minimum standard deviation by 2 or more. Pairs were also removed if one or both clusters had less than 20 counties attributed to it. Only five pairs of clusters survived these requirements, and Q-Q plots were checked for each of these clusters to ensure that the responses of each were roughly Normal. Finally, ANOVA was performed on each pair, testing the null hypothesis that the mean climate change belief of each cluster (differing only by the experience of extreme weather) was the same. To account for multiple testing, the Benjamini-Hochberg correction was applied to control for false detection rate. This less conservative test controlling the FDR was used rather than a correction such as Bonferroni because stakes are low if there is a false positive, so it seems appropriate rather than controlling for family-wise error.
 
-\begin{figure}[H]
-\centering
-\includegraphics[scale = 0.2]{images/matching_balance_plot.png}
-\caption{This figure shows that matching via MatchIt was able to reduce the standardized mean difference between all covariates but the median age, whose standardized mean difference actually increased.}
-\end{figure}
-
-Once counties were matched, the difference in climate change belief was calculated between each pair. The average of these differences serves as a metric for how experiencing extreme weather affects the probability of otherwise similar counties' beliefs in climate change.
-
-Finally, a clustering approach was applied to the data to see how counties similar to each other in more granular terms compared with respect to climate change belief. To minimize the number of clusters, four covariates found to be most predictive in the initial exploratory analysis - political leaning, median age, proportion of population identifying as white, and median income - were discretized into two categories each. Median age was divided into "Young Adults" and "Adults", using age 35 as the threshold, which seems to be a common cut-off for studies utilizing age. Counties were categorized as having a "high" proportion of white residents if they had a proportion above the national proportion (which the Census Bureau reported to be 76.3\% in 2019),  and "low" otherwise. Similarly, counties were categorized as having a "high" median income if the county median income exceeded the national median income of \$62,843 (as reported by the Census in 2019), and "low" otherwise. Though median age, income, and demographics vary quite a lot from state to state, national thresholds are used rather than state thresholds because counties are ultimately compared from between different states, so it seems more reasonable to categorize counties uniformly. Finally, counties were classified as either "red" or "blue" depending on if the majority of the 2020 general election vote went to Biden or Trump. The resulting 16 clusters were then split further into pairs based on whether or not they had experienced extreme weather.
-
-To maintain the ANOVA assumption of equal variances, pairs were removed from the cluster analysis if the maximum standard deviation of the pair exceeded the minimum standard deviation by 2 or more. Pairs were also removed if one or both clusters had less than 20 counties attributed to it. Only four pairs of clusters survived these requirements, and Q-Q plots were checked for each of these clusters to ensure that the responses of each were roughly Normal. Finally, ANOVA was performed on each pair, testing the null hypothesis that the mean climate change belief of each cluster (differing only by the experience of extreme weather) was the same. To account for multiple testing, the Benjamini-Hochberg correction was applied to control for false detection rate. This less conservative test controlling the FDR was used rather than a correction such as Bonferroni because stakes are low if there is a false positive, so it seems appropriate rather than controlling for family-wise error.
-
-\section{Results}
-The summary of the linear regression analysis is displayed in Figure 5, where we can see that the coefficient of the flag for witnessing extreme weather is small, positive, and significant to the $\alpha = 0.01$ level. This value indicates that counties that witnessed an extreme weather event are likely to have a slightly higher belief in climate change by about 0.41 (in percentage, not proportion). As expected, counties with a higher proportion of the 2020 election vote going to Joe Biden are much more likely to believe in climate change. Interestingly, counties with an older median age are predicted to also be slightly more likely to believe in climate change, which may be surprising as a common perception is that younger generations care much more about the environment. Counties with less diverse populations with respect to Asian and Hispanic individuals are predicted to be less likely to believe in climate change. 
-
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.4]{images/regression_summary.png}
-\caption{Summary of linear regression model predicting county climate change belief.}
-\end{figure}
-
-A repeated analysis looking just at counties that experienced hurricanes in particular tells a very similar story but with a larger and more significant coefficient for experiencing the extreme weather: an additive increase of 1.02\% is predicted for those counties that experienced hurricanes in 2019 as well as twice more since 2015. 
-
-The metric calculated from the matching process described above falls in a similar range, with the average difference in county belief between matched pairs calculated to be 0.78\%, indicating again that experiencing an extreme weather event may increase belief in climate change slightly. The repeated analysis for experiencing hurricanes specifically resulted in a value of 1.29\%, mirroring the increase seen in the regression analysis between comparing counties that experienced any weather and counties that specifically experiences hurricanes.
-
-The clustering analysis had less conclusive results, which are shown in Table 1 below. For low income, older, whiter, and more Republican counties, the test found that experiencing a weather event had a small but significant negative effect on climate change beliefs. Alternatively, in counties that are lower income, older, more Republican, but with smaller white populations, the test found that experiencing a weather event had a small but significant positive effect on climate change beliefs. If this analysis were at a finer granularity of population (such as towns, congressional districts, etc), more clusters may have a larger amount of samples and thus more interesting heterogeneous results. However, in this case the number of counties limits the extent to which this cluster analysis is very meaningful. The small amount of counties that make it into each cluster also meant that the analogous hurricane analysis was not possible for this approach.  
+Only one pair resulted in a significant result (to the $\alpha = 0.05$ level): for counties that were Republican leaning, above-average white and below-average Hispanic, with high voter turnout and low libertarian vote, the test found that experiencing a weather event had a small, positive effect on climate change beliefs. The lack of other insights here, partly because many clusters could not be tested due to small sample sizes, motivates the following matching and regression approaches.
 
 \begin{center}
 \begin{table}
-\begin{tabular}{| c | c | c | c | c | c | c | c | c | c ||}
+\begin{tabular}{| c | c | c | c | c | c | c | c | c | c | c ||}
 \hline
-Pair & Political & Median Age & White Pop. & Median Income & $n$ & Mean Diff. & p-value & BH p-value \\ [0.5ex]
+Pair & Political & Hisp. Pop. & White Pop. & Voter Turnout & Libert. Vote & $n$ & Mean Diff. & p-value & BH p-value \\ [0.5ex]
 \hline
 \hline
-1 & Red & Adult & High & Low & 1424, 265 & -0.8739 & 0.0016 & 0.0065 \\
+1 & Red & Low & High & High & Low & 397, 104 & 1.2466 & 0.0052 & 0.0260 \\
 \hline
-2 & Red & Adult & Low & Low & 285, 107 & 1.1322 & 0.0067 & 0.0202 \\
+2 & Red & Low & High & Low & Low & 423, 130 & -0.1445 & 0.7159 & 0.9775 \\
 \hline
-3 & Blue & Adult & Low & Low & 111, 38 & 0.8758 & 0.2284 & 0.2284 \\
+3 & Red & Low & Low & Low & Low & 71, 26 & 0.2999 & 0.6399 & 0.9775 \\
 \hline
-4 & Red & Adult & High & High & 276, 28 & 1.1853 & 0.1638 & 0.2284 \\
+4 & Red & Low & High & High & High & 572, 57 & -0.0151 & 0.9775 & 0.9775 \\
+\hline
+5 & Red & Low & High & Low & High & 360, 68 & -0.4512 & 0.3794 & 0.9775 \\
 \hline
 \end{tabular}
 \caption{Results of clustering analysis. Values for $n$ are listed in the order: did not experience extreme weather, did experience extreme weather. Positive mean difference values indicate that counties that did experience extreme weather had higher average belief in climate change than those those that did not.}
@@ -247,8 +238,53 @@ Pair & Political & Median Age & White Pop. & Median Income & $n$ & Mean Diff. & 
 \end{center}
 
 
+\subsection{Matching}
+The lack of satisfying results from the exploratory clustering approach helps to motivate a different tactic: individually matching similar counties that differ on their extreme weather experience. To accomplish this, the R package MatchIt was used. This package is developed for causal inference applications, and "performs pairing, subset selection, and subclassification with the aim of creating treatment and control groups balanced on included covariates", as stated in its documentation. This analysis does not consist of a proper causal inference framework, for reasons including the lack of randomization between "treatment" of experiencing an extreme weather event, and the fact that belief estimates are obtained only at the county level rather than the individual level. However, the package and ideas behind comparing "treatment" and "control" group responses are still helpful for the goals of this report. Using MatchIt, counties that were flagged as experiencing extreme weather were matched to counties that did not, but were as similar as possible to the first county with respect to the selected covariates, which are unchanged from the Lasso-identified coefficients used in the clustering exercise. In particular, the "optimal" matching method option was used, which minimizes the sum of absolute pairwise distances in the matched sample. This lowers the probability of extreme within-pair distances with respect to covariates. Figure 6 shows the effects of matching on the standardized mean difference of the covariates of counties with and without the extreme weather flag. Note that the matching process resulted in 511 pairs, with no two control counties matched to the same extreme weather county.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.2]{images/matching_balance_plot.png}
+\caption{This figure shows that matching via MatchIt was able to improve the standardized mean difference between almost all covariates, though the Democrat proportion of votes remains virtually unchanged in magnitude but changes sign.}
+\end{figure}
+
+Once counties were matched, a paired t-test was performed to test the null hypothesis that the mean difference in climate change belief between pairs was zero. The results are reported in the Results section below, and a Q-Q plot is included in the appendix to demonstrate that Normality assumptions were met. 
+
+\subsection{Regression}
+Linear regression was used to get a second opinion on the relationship between extreme weather experience and climate change belief, holding other covariates constant, but also to get an overall picture for how all covariates contribute to climate change belief. In the matching procedure, the number of covariates was limited to try to allow for closer pairwise matches between the most predictive (as determined by Lasso) variables. This constraint doesn't need to apply to the regression model, so more covariates were included among those given larger coefficients by Lasso (though some were still omitted to avoid collinearity from inclusion of too many dependent proportions). 
+
+Model diagnostic tests passed for the resulting model, as the residuals appeared to be close to Normal and residual variance looked fairly equal across fitted values. Plots demonstrating these tests can be found in the appendix, and the regression summary is included in the results section. 
+
+\section{Results}
+\subsection{Matching}
+The paired t-test performed on matched counties found that the mean difference in climate change opinion of 0.7464 was significant to the $\alpha = 0.05$ level, rejecting the null hypothesis that the mean difference is 0. The table below summarizes these results.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|| c | c | c | c ||}
+\hline
+n & mean difference & t & p-value \\ [0.5ex]
+\hline
+\hline
+511 & 0.74641 & 2.1875 & 0.02916 \\
+\hline
+\end{tabular}
+\caption{Results of paired t-test, methods described in Matching subsection of Analysis.}
+\end{table}
+
+Though this paired t-test is not testing whether the nonzero mean difference is truly positive or negative, only if it is nonzero, the metric value does imply that experiencing extreme weather corresponds to a small increase in climate change belief.
+
+\subsection{Regression}
+The summary of the linear regression analysis is displayed in Figure 7, where we can see that the coefficient of the flag for witnessing extreme weather is small, positive, and significant to the $\alpha = 0.001$ level. This value indicates that counties that witnessed an extreme weather event are likely to have a slightly higher belief in climate change by about 0.48 (in percentage, not proportion). As expected, counties with a higher proportion of the 2020 election vote going to Joe Biden are much more likely to believe in climate change, and to a lesser extent, so are counties with a higher proportion of the vote to the libertarian candidate. Interestingly, counties with an older median age are predicted to also be slightly more likely to believe in climate change, which may be surprising as a common perception is that younger generations care much more about the environment. Proportions of different race and ethnicity groups seem to have some different relationships with climate change belief: counties with a larger non-Hispanic, white population or larger Black population are predicted to be less likely to believe in climate change, while counties with a larger Asian or Hispanic population are predicted to be more likely to believe in climate change. The voter turnout also has a significant coefficient in this model, indicating that counties with higher voter turnout rates in the 2020 general election tend to also have stronger beliefs in climate change.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/regression_summary.png}
+\caption{Summary of linear regression model predicting county climate change belief.}
+\end{figure}
+
+
 \section{Conclusion}
-The results of the multiple approaches explored in this analysis imply that recently experiencing an extreme weather event, in places where these types of events have become more common over the past 5 years, may increase the likelihood of the average individual believing that climate change exists. In particular, experiencing hurricanes seems to have a potentially larger positive effect. However, these effects may be heterogeneous between subsets of the population with different racial, socioeconomic, and political features, though this analysis is limited in its exploration of differences between such subsets via the cluster analysis described here. Though more variations of clusters could be formed through unsupervised learning or using different thresholds to separate the population by differently discretized covariates, this approach may sacrifice interpretability. As one may expect, the linear regression approach demonstrated how strongly political leaning influences climate change belief, indicating that even if more convincing effects of extreme weather were found, they would still likely be eclipsed by the effect of political polarization. 
+The results of the multiple approaches explored in this analysis imply that recently experiencing an extreme weather event, in places where these types of events have become more common over the past 5 years, may increase the likelihood of the average individual believing that climate change exists. The matching and linear regression approaches agree on this point. However, these effects may be heterogeneous between subsets of the population with different racial, socioeconomic, and political features, though this analysis is limited in its exploration of differences between such subsets via the cluster analysis described here. As one may expect, the linear regression approach and a simple ANOVA test demonstrated how strongly political leaning influences climate change belief, indicating that even if more convincing effects of extreme weather were found, they would still likely be eclipsed by the effect of political polarization. 
 
 \newpage
 \section{References}
@@ -287,6 +323,24 @@ The results of the multiple approaches explored in this analysis imply that rece
 \centering
 \includegraphics[scale=0.5]{images/regression_residuals_hist.png}
 \caption{Histogram of the residuals from the linear model discussed in the analysis section.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/lasso_train.png}
+\caption{Coefficients resulting from Lasso regression on the {\bf{training}} data (all covariates that were not extremely correlated included, with training data comprising 50\% of the original counties).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/lasso_test.png}
+\caption{Coefficients resulting from Lasso regression on the {\bf{test}} data (all covariates that were not extremely correlated included, with training data comprising 50\% of the original counties).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/matched_pair_qq.png}
+\caption{Normality check for the differences in climate change belief among matched pairs described in the Matching section.}
 \end{figure}
 
 \begin{figure}[H]

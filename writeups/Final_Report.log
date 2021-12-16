@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  15 DEC 2021 15:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  15 DEC 2021 23:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -387,126 +387,168 @@ LaTeX Info: Redefining \nameref on input line 21.
  [1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<images/election_climate_beliefs_map_in_group_comp.png, id=86, 2409.0pt x 1505.
-625pt>
+<images/election_climate_beliefs_map_in_group_comp.png, id=102, 2409.0pt x 1505
+.625pt>
 File: images/election_climate_beliefs_map_in_group_comp.png Graphic file (type 
 png)
  <use images/election_climate_beliefs_map_in_group_comp.png>
 Package pdftex.def Info: images/election_climate_beliefs_map_in_group_comp.png 
-used on input line 167.
+used on input line 168.
 (pdftex.def)             Requested size: 542.03838pt x 338.77399pt.
 
-Overfull \hbox (13.10162pt too wide) in paragraph at lines 167--168
+Overfull \hbox (13.10162pt too wide) in paragraph at lines 168--169
  [][] 
  []
 
-[2] <images/fema_events_maps_combined.png, id=92, 3011.25pt x 3613.5pt>
+[2] <images/fema_events_maps_combined.png, id=108, 3011.25pt x 3613.5pt>
 File: images/fema_events_maps_combined.png Graphic file (type png)
 
 <use images/fema_events_maps_combined.png>
 Package pdftex.def Info: images/fema_events_maps_combined.png used on input lin
-e 174.
+e 175.
 (pdftex.def)             Requested size: 526.97665pt x 632.37198pt.
- [3 <./images/election_climate_beliefs_map_in_group_comp.png>] [4 <./images/fem
-a_events_maps_combined.png>]
-<images/election_party_anova.png, id=105, 2409.0pt x 1505.625pt>
+ [3 <./images/election_climate_beliefs_map_in_group_comp.png>]
+<images/covariate_dist_comp.png, id=115, 2409.0pt x 2409.0pt>
+File: images/covariate_dist_comp.png Graphic file (type png)
+
+<use images/covariate_dist_comp.png>
+Package pdftex.def Info: images/covariate_dist_comp.png used on input line 181.
+
+(pdftex.def)             Requested size: 481.79147pt x 481.79147pt.
+ [4 <./images/fema_events_maps_combined.png>] [5 <./images/covariate_dist_comp.
+png>]
+<images/covariates_vs_happening.png, id=129, 2409.0pt x 2409.0pt>
+File: images/covariates_vs_happening.png Graphic file (type png)
+
+<use images/covariates_vs_happening.png>
+Package pdftex.def Info: images/covariates_vs_happening.png used on input line 
+195.
+(pdftex.def)             Requested size: 481.79147pt x 481.79147pt.
+ [6 <./images/covariates_vs_happening.png>] <images/election_party_anova.png, i
+d=136, 2409.0pt x 1505.625pt>
 File: images/election_party_anova.png Graphic file (type png)
 
 <use images/election_party_anova.png>
-Package pdftex.def Info: images/election_party_anova.png used on input line 191
+Package pdftex.def Info: images/election_party_anova.png used on input line 205
 .
 (pdftex.def)             Requested size: 481.79147pt x 301.11966pt.
- [5]
-<images/matching_balance_plot.png, id=110, 2409.0pt x 1204.5pt>
+ [7 <./images/election_party_anova.png>]
+Overfull \hbox (23.03638pt too wide) in paragraph at lines 220--236
+[][] 
+ []
+
+<images/matching_balance_plot.png, id=144, 2409.0pt x 1204.5pt>
 File: images/matching_balance_plot.png Graphic file (type png)
 
 <use images/matching_balance_plot.png>
-Package pdftex.def Info: images/matching_balance_plot.png used on input line 20
-4.
+Package pdftex.def Info: images/matching_balance_plot.png used on input line 24
+6.
 (pdftex.def)             Requested size: 481.79147pt x 240.89574pt.
- [6 <./images/election_party_anova.png>]
-[7 <./images/matching_balance_plot.png>]
-<images/regression_summary.png, id=124, 599.23875pt x 487.8225pt>
+ [8] [9 <./images/matching_balance_plot.png>] <images/regression_summary.png, i
+d=157, 612.2875pt x 549.05125pt>
 File: images/regression_summary.png Graphic file (type png)
 
 <use images/regression_summary.png>
-Package pdftex.def Info: images/regression_summary.png used on input line 219.
-(pdftex.def)             Requested size: 239.69125pt x 195.12553pt.
- [8 <./images/regression_summary.png>]
-[9]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 258.
+Package pdftex.def Info: images/regression_summary.png used on input line 281.
+(pdftex.def)             Requested size: 306.143pt x 274.52495pt.
+ [10 <./images/regression_summary.png>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 294.
 
- (/usr/local/texlive/2017/texmf-dist/tex/latex/base/omscmr.fd
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 258.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 294.
 
-Overfull \hbox (13.68613pt too wide) in paragraph at lines 258--259
+Overfull \hbox (13.68613pt too wide) in paragraph at lines 294--295
 []\OT1/cmr/m/n/10 Guardian ar-ti-cle about cur-rent cli-mate change cri-sis: []
 []$\OT1/cmtt/m/n/10 https : / / www . theguardian . com / environment / ng-[]in
 teractive /
  []
 
 
-Overfull \hbox (30.31093pt too wide) in paragraph at lines 259--260
+Overfull \hbox (30.31093pt too wide) in paragraph at lines 295--296
 []\OT1/cmr/m/n/10 Organization for cli-mate change com-mu-ni-ca-tion: [][]$\OT1
 /cmtt/m/n/10 https : / / climate-[]xchange . org / communicating-[]the-[]climat
 e-[]crisis/$[][] 
  []
 
-[10] <images/response_qqplot.png, id=153, 803.0pt x 501.875pt>
+[11] <images/response_qqplot.png, id=181, 803.0pt x 501.875pt>
 File: images/response_qqplot.png Graphic file (type png)
 
 <use images/response_qqplot.png>
-Package pdftex.def Info: images/response_qqplot.png used on input line 282.
+Package pdftex.def Info: images/response_qqplot.png used on input line 318.
 (pdftex.def)             Requested size: 401.49902pt x 250.93687pt.
 
-<images/regression_residuals_hist.png, id=154, 803.0pt x 501.875pt>
+<images/regression_residuals_hist.png, id=182, 803.0pt x 501.875pt>
 File: images/regression_residuals_hist.png Graphic file (type png)
 
 <use images/regression_residuals_hist.png>
 Package pdftex.def Info: images/regression_residuals_hist.png used on input lin
-e 288.
+e 324.
 (pdftex.def)             Requested size: 401.49902pt x 250.93687pt.
 
-<images/regression_variance_check.png, id=155, 803.0pt x 501.875pt>
+<images/lasso_train.png, id=183, 637.38126pt x 195.73125pt>
+File: images/lasso_train.png Graphic file (type png)
+
+<use images/lasso_train.png>
+Package pdftex.def Info: images/lasso_train.png used on input line 330.
+(pdftex.def)             Requested size: 318.68985pt x 97.86537pt.
+ [12 <./images/response_qqplot.png> <./images/regression_residuals_hist.png>]
+<images/lasso_test.png, id=192, 648.4225pt x 190.7125pt>
+File: images/lasso_test.png Graphic file (type png)
+
+<use images/lasso_test.png>
+Package pdftex.def Info: images/lasso_test.png used on input line 336.
+(pdftex.def)             Requested size: 324.21045pt x 95.356pt.
+
+<images/matched_pair_qq.png, id=193, 803.0pt x 501.875pt>
+File: images/matched_pair_qq.png Graphic file (type png)
+
+<use images/matched_pair_qq.png>
+Package pdftex.def Info: images/matched_pair_qq.png used on input line 342.
+(pdftex.def)             Requested size: 401.49902pt x 250.93687pt.
+
+<images/regression_variance_check.png, id=194, 803.0pt x 501.875pt>
 File: images/regression_variance_check.png Graphic file (type png)
 
 <use images/regression_variance_check.png>
 Package pdftex.def Info: images/regression_variance_check.png used on input lin
-e 294.
+e 348.
 (pdftex.def)             Requested size: 401.49902pt x 250.93687pt.
- [11 <./images/response_qqplot.png> <./images/regression_residuals_hist.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 300.
- [12 <./images/regression_variance_check.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 300.
+ [13 <./images/lasso_train.png> <./images/lasso_test.png> <./images/matched_pai
+r_qq.png>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 354.
+ [14 <./images/regression_variance_check.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 354.
  (./Final_Report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 300.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 300.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 354.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 354.
 Package rerunfilecheck Info: File `Final_Report.out' has not changed.
-(rerunfilecheck)             Checksum: 3B7A05A163D57D80A4412D666806DBB6;1352.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 300.
+(rerunfilecheck)             Checksum: E71E5A52F1C6FCC9E697C5C1BBAC6CA9;1412.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 354.
  ) 
 Here is how much of TeX's memory you used:
- 6741 strings out of 492995
- 98617 string characters out of 6132704
- 204442 words of memory out of 5000000
- 10180 multiletter control sequences out of 15000+600000
- 8883 words of font info for 33 fonts, out of 8000000 for 9000
+ 6786 strings out of 492995
+ 99573 string characters out of 6132704
+ 205737 words of memory out of 5000000
+ 10207 multiletter control sequences out of 15000+600000
+ 9191 words of font info for 34 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 28i,9n,28p,1664b,341s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
-r/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/
-local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/l
-ocal/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Final_Report.pdf (12 pages, 4262549 bytes).
+ 28i,9n,28p,1740b,362s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></u
+sr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr
+/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/l
+ocal/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/lo
+cal/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on Final_Report.pdf (14 pages, 6903145 bytes).
 PDF statistics:
- 206 PDF objects out of 1000 (max. 8388607)
- 167 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
- 185 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 255 PDF objects out of 1000 (max. 8388607)
+ 202 compressed objects within 3 object streams
+ 52 named destinations out of 1000 (max. 500000)
+ 242 words of extra memory for PDF output out of 10000 (max. 10000000)
 

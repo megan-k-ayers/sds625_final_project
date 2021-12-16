@@ -76,6 +76,17 @@ mean(x_t$happening - x_c$happening)
 # Perform a paired t-test
 t.test(x_t$happening, x_c$happening, paired = TRUE)
 
+# Check assumptions
+hist(x_t$happening - x_c$happening, breaks = 30)
+
+png(filename = "./writeups/images/matched_pair_qq.png",
+    width = 800, height = 500, pointsize = 20)
+qqnorm(x_t$happening - x_c$happening,
+       main = "Normal Q-Q Plot: Matched pair difference
+in climate change belief")
+dev.off()
+
+
 
 # --------- Repeating with hurricane occurrence instead of all weather --------- 
 x <- read.csv("./processed_data/merged_data.csv")
@@ -116,5 +127,7 @@ x[matches[150, 1], ]; x[matches[150, 2], ]
 # the matching!
 mean(x_t$happening - x_c$happening)
 
-# Perform a paired t-test. Even more significant than before! 
+# Perform a paired t-test. Even more significant than before, but again not
+# feeling great about the matching, and would be more interesting if I could
+# compare with other individual weather events.
 t.test(x_t$happening, x_c$happening, paired = TRUE)

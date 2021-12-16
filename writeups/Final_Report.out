@@ -7,12 +7,16 @@
 \BOOKMARK [2][-]{subsection.2.3}{Census demographic data}{section.2}% 7
 \BOOKMARK [2][-]{subsection.2.4}{FEMA weather data}{section.2}% 8
 \BOOKMARK [1][-]{section.3}{Analysis}{}% 9
-\BOOKMARK [2][-]{subsection.3.1}{Covariate selection Should I select differently for the different methods? Here I am selecting variables to optimize for regression. If not, explain why. And explain what you mean by predictive.}{section.3}% 10
-\BOOKMARK [2][-]{subsection.3.2}{Regression model, matching, and clustering approaches}{section.3}% 11
-\BOOKMARK [1][-]{section.4}{Results}{}% 12
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 13
-\BOOKMARK [1][-]{section.6}{References}{}% 14
-\BOOKMARK [2][-]{subsection.6.1}{Contextualizing the problem of climate change and climate change communication}{section.6}% 15
-\BOOKMARK [2][-]{subsection.6.2}{Data sources}{section.6}% 16
-\BOOKMARK [2][-]{subsection.6.3}{Analysis documentation}{section.6}% 17
-\BOOKMARK [1][-]{section.7}{Appendix}{}% 18
+\BOOKMARK [2][-]{subsection.3.1}{Exploratory Data Analysis and Covariate Selection}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.2}{Exploratory clustering}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.3}{Matching}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.4}{Regression}{section.3}% 13
+\BOOKMARK [1][-]{section.4}{Results}{}% 14
+\BOOKMARK [2][-]{subsection.4.1}{Matching}{section.4}% 15
+\BOOKMARK [2][-]{subsection.4.2}{Regression}{section.4}% 16
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 17
+\BOOKMARK [1][-]{section.6}{References}{}% 18
+\BOOKMARK [2][-]{subsection.6.1}{Contextualizing the problem of climate change and climate change communication}{section.6}% 19
+\BOOKMARK [2][-]{subsection.6.2}{Data sources}{section.6}% 20
+\BOOKMARK [2][-]{subsection.6.3}{Analysis documentation}{section.6}% 21
+\BOOKMARK [1][-]{section.7}{Appendix}{}% 22
